@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個案督導報告與概念化儀表板 - Word輸出版</title>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
+            background-color: #f4f7f9;
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .rating-label {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 8px;
+            font-size: 0.875rem;
+            user-select: none;
+        }
+        input[type="radio"]:checked + .rating-label,
+        input[type="checkbox"]:checked + .rating-label {
+            background-color: #3b82f6; /* Blue-500 */
+            color: white;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.5);
+        }
+        .section-title {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .subsection-title {
+            font-weight: 600;
+            color: #1e40af; /* Blue-700 */
+            margin-top: 12px;
+            margin-bottom: 8px;
+            padding-left: 8px;
+            border-left: 3px solid #60a5fa; /* Blue-400 */
+        }
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #475569;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="app" class="max-w-4xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-blue-800 mb-2">個案督導報告與概念化儀表板</h1>
+            <p class="text-lg text-gray-600">結構化紀錄與深度臨床反思模板</p>
+            <p id="user-info" class="text-sm text-gray-400 mt-2"></p>
+        </header>
+
+        <form id="assessment-form">
+            
+            <!-- BLOCK I: 基礎資料與紅線安全 -->
+            <div class="card">
+                <h2 class="section-title text-red-600">區塊一：個案基礎與專業安全紅線</h2>
+                
+                <div class="grid md:grid-cols-3 gap-4 mb-4">
+                    <div class="input-group"><label for="client-id">個案代號<span class="text-red-500">*</span></label><input type="text" id="client-id" name="clientId" required class="w-full p-2 border border-gray-300 rounded-lg"></div>
+                    <div class="input-group"><label for="session-date">會談日期<span class="text-red-500">*</span></label><input type="date" id="session-date" name="sessionDate" value="" required class="w-full p-2 border border-gray-300 rounded-lg"></div>
+                    <div class="input-group"><label for="client-age">年齡</label><input type="number" id="client-age" name="clientAge" class="w-full p-2 border border-gray-300 rounded-lg"></div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-4 mb-4">
+                    <div class="input-group">
+                        <label>性別</label>
+                        <select name="clientGender" class="w-full p-2 border border-gray-300 rounded-lg">
+                            <option value="未選">請選擇</option>
+                            <option value="生理男">生理男</option>
+                            <option value="生理女">生理女</option>
+                            <option value="其他/不公開">其他/不公開</option>
+                        </select>
+                    </div>
+                    <div class="input-group col-span-2">
+                        <label for="occupation-detail">職業狀況（類型、做了多久）</label>
+                        <input type="text" id="occupation-detail" name="occupationDetail" placeholder="例：IT工程師，任職五年；全職家庭主婦" class="w-full p-2 border border-gray-300 rounded-lg">
+                    </div>
+                </div>
+
+                <!-- 感情狀況：修改為選擇 + 條件輸入 -->
+                <div class="input-group mb-4">
+                    <label for="relationship-status">感情狀況</label>
+                    <select id="relationship-status" name="relationshipStatus" onchange="toggleRelationshipDetails()" class="w-full p-2 border border-gray-300 rounded-lg">
+                        <option value="單身">單身/未婚</option>
+                        <option value="交往中">交往中</option>
+                        <option value="已婚">已婚</option>
+                        <option value="離婚">離婚</option>
+                        <option value="喪偶">喪偶</option>
+                        <option value="其他">其他/不公開</option>
+                    </select>
+                    
+                    <div id="relationship-details" class="mt-2 p-3 bg-gray-50 rounded-lg hidden">
+                        <!-- 已婚/交往中/喪偶的通用資訊 -->
+                        <label for="relationship-duration" class="text-sm font-normal">關係持續時間（例：已婚 12 年，交往 3 個月）：</label>
+                        <input type="text" id="relationship-duration" name="relationshipDuration" class="w-full p-2 border border-gray-300 rounded-lg text-sm mb-2">
+
+                        <!-- 離婚的特定資訊 -->
+                        <div id="divorce-details" class="hidden">
+                            <label for="divorce-reason" class="text-sm font-normal">離婚原因與時長：</label>
+                            <textarea id="divorce-reason" name="divorceReason" rows="2" placeholder="例：離婚 3 年，主要因價值觀不合與外遇" class="w-full p-2 border border-red-200 rounded-lg text-sm"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group mb-4">
+                    <label for="family-status">家庭狀況（父母關係、主要照顧者、手足狀況）</label>
+                    <textarea id="family-status" name="familyStatus" rows="3" placeholder="例：父母關係緊張，由祖父母帶大；有兩位哥哥，關係疏遠。" class="w-full p-2 border border-gray-300 rounded-lg text-sm"></textarea>
+                </div>
+                
+                <!-- 醫療與風險：調整結構使填寫欄位更明確 -->
+                <div class="mt-4 input-group">
+                    <label>是否服藥？（須確認精神科醫師資訊）</label>
+                    <div class="flex items-center gap-4">
+                        <input type="radio" id="meds-yes" name="medicationStatus" value="是" class="text-blue-600 focus:ring-blue-500" onclick="toggleMedsDetails(true)">
+                        <label for="meds-yes" class="text-gray-700">是</label>
+                        <input type="radio" id="meds-no" name="medicationStatus" value="否" class="text-blue-600 focus:ring-blue-500" onclick="toggleMedsDetails(false)">
+                        <label for="meds-no" class="text-gray-700">否</label>
+                    </div>
+                    <div id="meds-details" class="mt-2 p-3 bg-blue-50 rounded-lg hidden">
+                        <label for="meds-info" class="text-sm font-normal">👉 **服藥詳細資訊** (藥物名稱、劑量及上次看診日)：</label>
+                        <textarea id="meds-info" name="medsInfo" class="w-full p-2 border border-blue-300 rounded-lg text-sm" placeholder="請填寫：藥物名稱、劑量、頻率，以及看診精神科醫師姓名與醫院"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-4 input-group">
+                    <label>自殺風險評估（近三個月意念或行為）<span class="text-red-500">*</span></label>
+                    <div class="flex items-center gap-4">
+                        <input type="radio" id="suicide-no" name="suicideRisk" value="無" class="text-blue-600 focus:ring-blue-500" onclick="toggleRiskWarning(false)" required>
+                        <label for="suicide-no" class="text-gray-700">無</label>
+                        <input type="radio" id="suicide-yes" name="suicideRisk" value="有" class="text-blue-600 focus:ring-blue-500" onclick="toggleRiskWarning(true)">
+                        <label for="suicide-yes" class="text-gray-700">有</label>
+                    </div>
+                    <div id="risk-warning" class="mt-2 p-3 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-lg hidden">
+                        <p class="font-bold">⚠️ 極高風險警示：</p>
+                        <p class="text-sm">若為急性危險，請立即停止催眠，並啟動危機處理或轉介流程。</p>
+                        <label for="risk-details" class="text-sm font-normal text-red-700">👉 **風險處置詳細資訊** (風險等級、保護因子、處理方式)：</label>
+                        <textarea id="risk-details" name="riskDetails" placeholder="請詳細備註：風險級別（低/中/高）、個案的保護因子、危機處理或轉介流程是否已啟動" class="w-full mt-2 p-2 border border-red-300 rounded-lg text-sm"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOCK II: 個案概念化核心與病理分析 -->
+            <div class="card bg-yellow-50 border border-yellow-200">
+                <h2 class="section-title text-yellow-700">區塊二：個案概念化核心與病理分析</h2>
+                
+                <div class="input-group mb-4">
+                    <label for="chief-complaint">主訴與遭遇情境（個案用自己的話描述困擾）<span class="text-red-500">*</span></label>
+                    <textarea id="chief-complaint" name="chiefComplaint" rows="3" placeholder="簡述個案來到會談室時，主要表達的困擾是什麼，以及最近遭遇了什麼樣的具體事件。" class="w-full p-2 border border-yellow-300 rounded-lg text-sm" required></textarea>
+                </div>
+                
+                <div class="input-group mb-4">
+                    <label for="personality-traits">個案的個人特質與個性</label>
+                    <textarea id="personality-traits" name="personalityTraits" rows="2" placeholder="例：高度理性、善於分析、追求完美、外向型焦慮、情緒表達受限。" class="w-full p-2 border border-yellow-300 rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="input-group mb-4">
+                    <label for="symptom-features">心理與病理的症狀特徵（請用觀察到的事實來描述）</label>
+                    <textarea id="symptom-features" name="symptomFeatures" rows="3" placeholder="例：持續性憂鬱情緒、強迫性檢查行為、社交畏懼、無法完成任務（遲滯）。" class="w-full p-2 border border-yellow-300 rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="input-group mb-4">
+                    <label for="diagnosis-history">疾病有無經過診斷？何時發病？治療方式？</label>
+                    <textarea id="diagnosis-history" name="diagnosisHistory" rows="3" placeholder="例：曾被診斷為廣泛性焦慮症（GAD），兩年前發病，主要以藥物控制，未曾進行長期心理治療。" class="w-full p-2 border border-yellow-300 rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="input-group mb-4">
+                    <label for="contextual-background">個案背景描述與生命階段議題（讓個案立體化）</label>
+                    <p class="text-xs text-gray-500 mb-1">描述個案每個階段的議題、關係如何，盡可能地讓個案變得更立體。</p>
+                    <textarea id="contextual-background" name="contextualBackground" rows="4" placeholder="例：童年環境缺乏安全感，導致成人後無法信任親密關係。目前正處於職業轉型的中年危機。" class="w-full p-2 border border-yellow-300 rounded-lg text-sm"></textarea>
+                </div>
+            </div>
+
+            <!-- BLOCK III: 深入洞察與潛意識藍圖 -->
+            <div class="card bg-blue-50 border border-blue-200">
+                <h2 class="section-title text-blue-700">區塊三：潛意識深度洞察與療癒藍圖</h2>
+                
+                <p class="subsection-title">3.1 核心機制分析 (Core Mechanisms)</p>
+                <div class="mb-4 input-group">
+                    <label>1. 潛意識核心信念 (Core Belief)</label>
+                    <textarea name="coreBelief" placeholder="請精煉一句話概括個案的核心信念（例：我不夠好、我必須完美才能被愛）。" rows="2" class="w-full p-2 border border-blue-300 rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="mb-4 input-group">
+                    <label class="text-lg font-bold text-blue-800">2. 「包裝」機制的剖析 (Masking Analysis)</label>
+                    <p class="text-sm text-gray-500 mb-2">請參照以下光譜，識別個案防禦機制的核心目的與潛意識恐懼：</p>
+                    
+                    <!-- 新增的包裝光譜參考表 -->
+                    <div class="overflow-x-auto mb-4 border border-blue-300 rounded-lg">
+                        <table class="min-w-full divide-y divide-blue-200 text-sm">
+                            <thead class="bg-blue-100">
+                                <tr>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">核心目的</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">潛意識恐懼</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">具體行為表現</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-blue-200">
+                                <tr>
+                                    <td class="px-3 py-2 whitespace-nowrap font-medium">關係連結</td>
+                                    <td class="px-3 py-2">恐懼被遺棄、不再被愛</td>
+                                    <td class="px-3 py-2">討好、表現完美、順從</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 whitespace-nowrap font-medium">自我價值</td>
+                                    <td class="px-3 py-2">恐懼平庸、恐懼被看不起</td>
+                                    <td class="px-3 py-2">炫耀成就、過度努力</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 whitespace-nowrap font-medium">保護他人</td>
+                                    <td class="px-3 py-2">恐懼成為負擔、愧疚</td>
+                                    <td class="px-3 py-2">報喜不報憂、隱忍痛苦</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 whitespace-nowrap font-medium">情緒隔離</td>
+                                    <td class="px-3 py-2">恐懼崩潰、無法處理負面情緒</td>
+                                    <td class="px-3 py-2">理性化、甚至戴上快樂面具</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 whitespace-nowrap font-medium text-red-700">安全防禦</td>
+                                    <td class="px-3 py-2 text-red-700">恐懼受傷、恐懼失控</td>
+                                    <td class="px-3 py-2 text-red-700">冷漠、強勢、不在乎</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <label class="text-gray-700 font-medium mt-3 block">請選擇個案的主要包裝動機 (可複選)</label>
+                    <div class="flex flex-wrap gap-2 mt-2 text-sm">
+                        <input type="checkbox" id="mask-relational" name="maskMotives" value="關係連結" class="hidden">
+                        <label for="mask-relational" class="rating-label">關係連結</label>
+                        <input type="checkbox" id="mask-selfworth" name="maskMotives" value="自我價值" class="hidden">
+                        <label for="mask-selfworth" class="rating-label">自我價值</label>
+                        <input type="checkbox" id="mask-protect" name="maskMotives" value="保護他人" class="hidden">
+                        <label for="mask-protect" class="rating-label">保護他人</label>
+                        <input type="checkbox" id="mask-isolate" name="maskMotives" value="情緒隔離" class="hidden">
+                        <label for="mask-isolate" class="rating-label">情緒隔離</label>
+                        <input type="checkbox" id="mask-defense" name="maskMotives" value="安全防禦" class="hidden">
+                        <label for="mask-defense" class="rating-label bg-red-100 text-red-800">安全防禦 (冷漠/強勢)</label>
+                    </div>
+
+                    <textarea name="maskNotes" placeholder="備註：包裝的具體樣貌與何時會鬆動" rows="2" class="w-full p-2 mt-2 border border-blue-300 rounded-lg text-sm"></textarea>
+                </div>
+
+                <p class="subsection-title">3.2 深度提問</p>
+                <div class="mb-4 input-group">
+                    <label>3. 個案最努力想要隱藏的，是哪一種情緒？</label>
+                    <textarea name="hiddenEmotion" placeholder="請具體寫出被壓抑的情緒與其外在表現。" rows="2" class="w-full p-2 border border-blue-300 rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="mb-4 input-group">
+                    <label>4. 個案的內在小孩，現在看起來是什麼樣子？</label>
+                    <textarea name="innerChildState" placeholder="請用視覺化的方式描述內在小孩的狀態與需求。" rows="2" class="w-full p-2 border border-blue-300 rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="mb-4 input-group">
+                    <label>5. 為了維持現狀（舊模式），個案願意付出的最大代價是什麼？</label>
+                    <textarea name="statusQuoCost" placeholder="分析個案潛意識不想改變的原因與其代價（次級獲益與轉變阻力）。" rows="2" class="w-full p-2 border border-blue-300 rounded-lg text-sm"></textarea>
+                </div>
+            </div>
+            
+            <!-- BLOCK IV: 臨床觀察與功能性評估 -->
+            <div class="card">
+                <h2 class="section-title">區塊四：臨床觀察與功能性評估</h2>
+                
+                <!-- 1. 主觀觀察 -->
+                <div class="input-group mb-4">
+                    <label for="subjective-observation">對於個案的主觀觀察（神情、表達、衣著、氣場）<span class="text-red-500">*</span></label>
+                    <textarea id="subjective-observation" name="subjectiveObservation" rows="3" placeholder="例：神情疲憊但眼神銳利，衣著正式整潔。說話速度快，語氣帶有急切感。" class="w-full p-2 border border-gray-300 rounded-lg text-sm" required></textarea>
+                </div>
+
+                <p class="subsection-title">4.1 功能性行為與風險</p>
+                <!-- 睡眠與時長 -->
+                <div class="mb-4">
+                    <label class="font-semibold text-gray-700">1. 睡眠質量與時長（近一週平均）<span class="text-red-500">*</span></label>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <input type="radio" id="sleep-1" name="sleepQuality" value="正常" class="hidden" required><label for="sleep-1" class="rating-label">正常</label>
+                        <input type="radio" id="sleep-2" name="sleepQuality" value="輕微失調" class="hidden"><label for="sleep-2" class="rating-label">輕微失調</label>
+                        <input type="radio" id="sleep-3" name="sleepQuality" value="中度障礙" class="hidden"><label for="sleep-3" class="rating-label">中度障礙</label>
+                        <input type="radio" id="sleep-4" name="sleepQuality" value="嚴重障礙" class="hidden"><label for="sleep-4" class="rating-label bg-red-500 text-white">嚴重障礙</label>
+                    </div>
+                    <input type="text" name="sleepDurationActual" placeholder="實際平均睡眠時長（小時/天）" class="w-full mt-2 p-2 border border-gray-300 rounded-lg text-sm">
+                </div>
+
+                <!-- 能量/精力水平 -->
+                <div class="mb-4">
+                    <label class="font-semibold text-gray-700">2. 能量/精力水平<span class="text-red-500">*</span></label>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <input type="radio" id="energy-1" name="energyLevel" value="正常" class="hidden" required><label for="energy-1" class="rating-label">正常範圍（平穩）</label>
+                        <input type="radio" id="energy-2" name="energyLevel" value="持續低落" class="hidden"><label for="energy-2" class="rating-label bg-yellow-100 text-yellow-800">持續低落（鬱期傾向）</label>
+                        <input type="radio" id="energy-3" name="energyLevel" value="輕度亢奮" class="hidden"><label for="energy-3" class="rating-label bg-orange-100 text-orange-800">輕度亢奮（話多）</label>
+                        <input type="radio" id="energy-4" name="energyLevel" value="高度亢奮" class="hidden"><label for="energy-4" class="rating-label bg-red-100 text-red-800">高度亢奮（躁期傾向）</label>
+                    </div>
+                </div>
+                
+                <!-- 社交與職業功能（衝動性與風險行為） -->
+                <div class="mb-4">
+                    <label class="font-semibold text-gray-700">3. 社交與職業功能（衝動性與風險行為）</label>
+                    <div class="flex flex-wrap gap-2 mt-2 text-sm">
+                        <input type="checkbox" id="tag-work-difficult" name="riskTags" value="工作有困難" class="hidden"><label for="tag-work-difficult" class="rating-label bg-gray-100">工作有困難</label>
+                        <input type="checkbox" id="tag-impulse-spending" name="riskTags" value="衝動消費/高風險決策" class="hidden"><label for="tag-impulse-spending" class="rating-label bg-red-100 text-red-800">衝動消費/高風險決策</label>
+                        <input type="checkbox" id="tag-drug-abuse" name="riskTags" value="藥物濫用或戒斷" class="hidden"><label for="tag-drug-abuse" class="rating-label bg-red-100 text-red-800">藥物濫用或戒斷</label>
+                        <input type="checkbox" id="tag-relationship-conflict" name="riskTags" value="關係衝突或毀損" class="hidden"><label for="tag-relationship-conflict" class="rating-label bg-yellow-100 text-yellow-800">關係衝突或毀損</label>
+                    </div>
+                    <textarea name="functionalNotes" placeholder="功能性行為的客觀事實紀錄（例：已連續兩週請假、昨天買了一台新車）" class="w-full mt-2 p-2 border border-gray-300 rounded-lg text-sm"></textarea>
+                </div>
+
+                <p class="subsection-title">4.2 潛意識信號與非語言觀察</p>
+                <!-- 語氣與聲調一致性 -->
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="mb-4">
+                        <label class="font-semibold text-gray-700">語氣與內容一致性<span class="text-red-500">*</span></label>
+                        <div class="flex flex-wrap gap-2 mt-2 text-sm">
+                            <input type="radio" id="tone-1" name="toneConsistency" value="一致" class="hidden" required><label for="tone-1" class="rating-label bg-green-100 text-green-800">🟢 一致</label>
+                            <input type="radio" id="tone-2" name="toneConsistency" value="輕微脫節" class="hidden"><label for="tone-2" class="rating-label bg-yellow-100 text-yellow-800">🟡 輕微脫節</label>
+                            <input type="radio" id="tone-3" name="toneConsistency" value="嚴重脫節" class="hidden"><label for="tone-3" class="rating-label bg-red-100 text-red-800">🔴 嚴重脫節</label>
+                        </div>
+                        <textarea name="toneNotes" placeholder="（例：用愉悅的語氣描述失業）" class="w-full mt-2 p-2 border border-gray-300 rounded-lg text-sm"></textarea>
+                    </div>
+
+                    <!-- 肢體語言與微表情 -->
+                    <div class="mb-4">
+                        <label class="font-semibold text-gray-700">肢體語言與微表情標籤</label>
+                        <div class="flex flex-wrap gap-2 mt-2 text-sm">
+                            <input type="checkbox" id="body-tense" name="bodyCues" value="肩頸僵硬" class="hidden"><label for="body-tense" class="rating-label bg-gray-100">肩頸僵硬</label>
+                            <input type="checkbox" id="body-fidget" name="bodyCues" value="手部搓揉/抖動" class="hidden"><label for="body-fidget" class="rating-label bg-gray-100">手部搓揉/抖動</label>
+                            <input type="checkbox" id="body-avoidance" name="bodyCues" value="持續閃躲眼神" class="hidden"><label for="body-avoidance" class="rating-label bg-gray-100">持續閃躲眼神</label>
+                            <input type="checkbox" id="body-micro" name="bodyCues" value="短暫恐懼/悲傷微表情" class="hidden"><label for="body-micro" class="rating-label bg-yellow-100 text-yellow-800">短暫恐懼/悲傷微表情</label>
+                        </div>
+                        <textarea name="bodyNotes" placeholder="（例：提到家人時，眼角有 1 秒的抽動）" class="w-full mt-2 p-2 border border-gray-300 rounded-lg text-sm"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOCK V: 治療歷程與策略 -->
+            <div class="card bg-green-50 border border-green-200">
+                <h2 class="section-title text-green-700">區塊五：治療歷程與策略規劃</h2>
+
+                <p class="subsection-title">5.1 關係建立與催眠預備度</p>
+                <!-- 信任度與關係建立 -->
+                <div class="mb-4">
+                    <label class="font-semibold text-gray-700">1. 信任度與關係建立（催眠師判斷）<span class="text-red-500">*</span></label>
+                    <div class="flex flex-wrap gap-2 mt-2 text-xs md:text-sm">
+                        <input type="radio" id="trust-1" name="trustLevel" value="1. 防衛質疑" class="hidden" required><label for="trust-1" class="rating-label">1. 防衛質疑</label>
+                        <input type="radio" id="trust-2" name="trustLevel" value="2. 被動配合" class="hidden"><label for="trust-2" class="rating-label">2. 被動配合</label>
+                        <input type="radio" id="trust-3" name="trustLevel" value="3. 願意開放" class="hidden"><label for="trust-3" class="rating-label">3. 願意開放</label>
+                        <input type="radio" id="trust-4" name="trustLevel" value="4. 高度信任" class="hidden"><label for="trust-4" class="rating-label">4. 高度信任</label>
+                        <input type="radio" id="trust-5" name="trustLevel" value="5. 過度依賴（警惕）" class="hidden"><label for="trust-5" class="rating-label bg-red-100 text-red-800">5. 過度依賴（警惕）</label>
+                    </div>
+                </div>
+
+                <!-- 催眠感受性 -->
+                <div class="mb-4">
+                    <label class="font-semibold text-gray-700">2. 催眠感受性（初次引導練習後判斷）<span class="text-red-500">*</span></label>
+                    <div class="flex flex-wrap gap-2 mt-2 text-sm">
+                        <input type="radio" id="trance-1" name="tranceResponsiveness" value="抗拒/阻斷" class="hidden" required><label for="trance-1" class="rating-label bg-red-100 text-red-800">抗拒/阻斷</label>
+                        <input type="radio" id="trance-2" name="tranceResponsiveness" value="微弱反應" class="hidden"><label for="trance-2" class="rating-label">微弱反應</label>
+                        <input type="radio" id="trance-3" name="tranceResponsiveness" value="中度反應" class="hidden"><label for="trance-3" class="rating-label">中度反應</label>
+                        <input type="radio" id="trance-4" name="tranceResponsiveness" value="高度反應" class="hidden"><label for="trance-4" class="rating-label bg-green-100 text-green-800">高度反應</label>
+                    </div>
+                    <textarea name="tranceNotes" placeholder="催眠反應觀察備註（例：手部漂浮時，肢體有輕微顫抖，但眼睛未完全閉合）" class="w-full mt-2 p-2 border border-gray-300 rounded-lg text-sm"></textarea>
+                </div>
+
+                <p class="subsection-title">5.2 歷程總結與計畫</p>
+                <div class="grid md:grid-cols-3 gap-4 mb-4">
+                    <div class="input-group"><label for="total-sessions">總共次數</label><input type="number" id="total-sessions" name="totalSessions" placeholder="例：8" class="w-full p-2 border border-gray-300 rounded-lg"></div>
+                    <div class="input-group col-span-2"><label for="session-frequency">頻率與平均時長</label><input type="text" id="session-frequency" name="sessionFrequency" placeholder="例：每週一次，每次 90 分鐘" class="w-full p-2 border border-gray-300 rounded-lg"></div>
+                </div>
+
+                <div class="input-group mb-4">
+                    <label for="client-expectations">個案的期待與主要困擾<span class="text-red-500">*</span></label>
+                    <textarea id="client-expectations" name="clientExpectations" rows="2" placeholder="個案希望達成的具體目標與當前的核心困擾（用個案的語言）。" class="w-full p-2 border border-green-300 rounded-lg text-sm" required></textarea>
+                </div>
+
+                <div class="input-group mb-4">
+                    <label for="approach-plan">對於個案採用的取向、理論及處遇計畫<span class="text-red-500">*</span></label>
+                    <textarea id="approach-plan" name="approachPlan" rows="3" placeholder="例：創傷知情照護取向、結合內在家庭系統(IFS)模型。處遇計畫：前四次建立安全基地，後續處理創傷記憶，最後整合資源。" class="w-full p-2 border border-green-300 rounded-lg text-sm" required></textarea>
+                </div>
+                
+                <div class="mb-4 input-group">
+                    <label>3. 催眠策略與資源建構目標<span class="text-red-500">*</span></label>
+                    <p class="text-xs text-gray-500 mb-1">基於概念化，設定短期（穩定）與長期（轉化）目標。</p>
+                    <textarea name="strategyTarget" placeholder="短期目標：穩定情緒與睡眠；長期目標：放下完美面具，接納內在脆弱，建立內在安全基地。" rows="3" class="w-full p-2 border border-blue-300 rounded-lg text-sm" required></textarea>
+                </div>
+
+                <div class="input-group mb-4">
+                    <label for="progress-summary">療程進展與主訴的改變（摘要重要節點）</label>
+                    <textarea id="progress-summary" name="progressSummary" rows="4" placeholder="摘要出當中重要的節點（例：第三次會談：個案第一次在會談中落淚；第八次會談：主訴的強迫性行為頻率降低 30%）。" class="w-full p-2 border border-green-300 rounded-lg text-sm"></textarea>
+                </div>
+            </div>
+
+            <!-- BLOCK VI: 歷程觀察與督導問題 -->
+            <div class="card bg-purple-50 border border-purple-200">
+                <h2 class="section-title text-purple-700">區塊六：歷程觀察與督導問題</h2>
+
+                <div class="input-group mb-4">
+                    <label for="special-incidents">特殊事件的發生與轉折點</label>
+                    <p class="text-xs text-gray-500 mb-1">記錄諮商歷程中出現的任何特殊互動、困難處、或轉折點。例：雙重關係的出現、諮商關係的變化、或突發事件的處理等。</p>
+                    <textarea id="special-incidents" name="specialIncidents" rows="3" placeholder="例：第五次會談後，個案突然傳訊詢問私人問題；第九次會談，個案對催眠師的引導產生強烈抗拒，關係進入轉折點。" class="w-full p-2 border border-purple-300 rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="input-group mb-4">
+                    <label for="supervision-questions">對於這個個案想要在督導中討論的問題<span class="text-red-500">*</span></label>
+                    <p class="text-xs text-gray-500 mb-1">明確提出您在技術或反思上遇到的困境。</p>
+                    <textarea id="supervision-questions" name="supervisionQuestions" rows="3" placeholder="例：1. 如何處理個案在進入深度催眠時，總是出現身體緊繃的狀況？ 2. 我對個案的憤怒感到焦慮，該如何進行自我覺察？" class="w-full p-2 border border-purple-300 rounded-lg text-sm" required></textarea>
+                </div>
+
+                <div class="input-group mb-4">
+                    <label for="deep-dive-points">對於這個個案可以再深入探討的點</label>
+                    <textarea id="deep-dive-points" name="deepDivePoints" rows="2" placeholder="例：個案與母親的共生關係是否為核心？目前我使用的創傷介入是否太快？" class="w-full p-2 border border-purple-300 rounded-lg text-sm"></textarea>
+                </div>
+            </div>
+
+            <!-- 總結與行動建議 -->
+            <div class="card text-center bg-gray-100 border border-gray-300">
+                <h2 class="section-title text-gray-700">最終行動建議（催眠師自我判斷）<span class="text-red-500">*</span></h2>
+                <div class="flex justify-center gap-4 mb-4">
+                    <input type="radio" id="action-green" name="actionPlan" value="可進行催眠（綠燈）" class="hidden" required>
+                    <label for="action-green" class="rating-label bg-green-600 text-white font-bold hover:bg-green-700">✅ 可進行催眠（綠燈）</label>
+                    <input type="radio" id="action-yellow" name="actionPlan" value="暫緩觀察（黃燈）" class="hidden">
+                    <label for="action-yellow" class="rating-label bg-yellow-600 text-white font-bold hover:bg-yellow-700">⚠️ 暫緩觀察（黃燈）</label>
+                    <input type="radio" id="action-red" name="actionPlan" value="立即轉介（紅燈）" class="hidden">
+                    <label for="action-red" class="rating-label bg-red-600 text-white font-bold hover:bg-red-700">❌ 立即轉介（紅燈）</label>
+                </div>
+
+                <button type="submit" class="w-full md:w-1/2 p-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg">
+                    💾 生成 Word 督導報告（.doc）
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // -- Firebase / Environment Mock Setup --
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hypnosis-dashboard-101';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // Mock User ID generation since Firebase is not fully implemented in this prototype
+        const userId = 'hypnotist-' + crypto.randomUUID().substring(0, 8); 
+
+        document.getElementById('user-info').textContent = `App ID: ${appId} | 使用者 ID: ${userId} | ${new Date().toLocaleString('zh-TW')}`;
+        // Set today's date as default
+        document.getElementById('session-date').value = new Date().toISOString().substring(0, 10);
+
+        function toggleMedsDetails(show) {
+            document.getElementById('meds-details').classList.toggle('hidden', !show);
+        }
+
+        function toggleRiskWarning(show) {
+            document.getElementById('risk-warning').classList.toggle('hidden', !show);
+        }
+        
+        // 根據感情狀況顯示或隱藏細節
+        function toggleRelationshipDetails() {
+            const status = document.getElementById('relationship-status').value;
+            const detailsDiv = document.getElementById('relationship-details');
+            const divorceDiv = document.getElementById('divorce-details');
+            const durationInput = document.getElementById('relationship-duration');
+            const divorceReasonInput = document.getElementById('divorce-reason');
+
+            if (status === '單身' || status === '其他') {
+                detailsDiv.classList.add('hidden');
+                divorceDiv.classList.add('hidden');
+                durationInput.value = ''; // 清空欄位
+                divorceReasonInput.value = ''; // 清空欄位
+            } else {
+                detailsDiv.classList.remove('hidden');
+                
+                if (status === '離婚') {
+                    divorceDiv.classList.remove('hidden');
+                    durationInput.placeholder = '例：離婚時長 3 年';
+                } else {
+                    divorceDiv.classList.add('hidden');
+                    durationInput.placeholder = '例：已婚 12 年，交往 3 個月';
+                    divorceReasonInput.value = ''; // 清空欄位
+                }
+            }
+        }
+
+        /**
+         * 【關鍵修正】HTML 轉義函數，用於安全地將用戶輸入插入到 HTML 字串中
+         * 專門處理所有可能破壞 JavaScript Template Literal (`) 結構的字元。
+         * @param {string} unsafe - 來自用戶輸入的原始字串
+         * @returns {string} 轉義後的字串
+         */
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return unsafe;
+            return unsafe.replace(/&/g, "&amp;")
+                         .replace(/</g, "&lt;")
+                         .replace(/>/g, "&gt;")
+                         .replace(/"/g, "&quot;")
+                         .replace(/'/g, "&#039;")
+                         // 1. 處理所有換行符號 (\r\n, \n, \r) 轉換為 <br/>，防止破壞 JS 模板字串
+                         .replace(/(\r\n|\n|\r)/g, "<br/>") 
+                         // 2. 處理 JavaScript Template Literal 的關鍵字元：反引號 (`)
+                         .replace(/`/g, "&#x60;") 
+                         // 3. 處理反斜線 (\)，防止它意外轉義 JS 模板字串中的其他字元
+                         .replace(/\\/g, "&#92;"); 
+        }
+
+
+        // --- Word Generation Logic ---
+
+        function generateWordContent(data) {
+            
+            // 1. 對所有輸入數據進行轉義，以避免語法錯誤和 HTML 注入
+            const escapedData = {};
+            for (const key in data) {
+                const value = data[key];
+                if (Array.isArray(value)) {
+                    escapedData[key] = value.map(item => escapeHtml(item));
+                } else {
+                    escapedData[key] = escapeHtml(value);
+                }
+            }
+            
+            const date = new Date().toLocaleString('zh-TW', { dateStyle: 'long', timeStyle: 'short' });
+            const clientId = escapedData.clientId || 'N/A';
+            
+            // 處理感情狀況的輸出文字
+            let relationshipDetailText = escapedData.relationshipStatus || '未選';
+            if (escapedData.relationshipStatus !== '單身' && escapedData.relationshipStatus !== '其他' && escapedData.relationshipDuration) {
+                relationshipDetailText += ` (${escapedData.relationshipDuration})`;
+            }
+            if (escapedData.relationshipStatus === '離婚' && escapedData.divorceReason) {
+                 relationshipDetailText += ` | 離婚細節：${escapedData.divorceReason}`;
+            }
+
+            // 輔助函數：將簡短資料格式化為 (標籤: 答案標籤)
+            function formatShortData(label, dataValue) {
+                return `<p><span class="answer-label">${label}：</span> <span class="answer-data">${dataValue || '未填'}</span></p>`;
+            }
+
+            // 輔助函數：將長篇資料格式化為 (標題) + (答案框)
+            function formatLongData(title, dataValue) {
+                return `<h2>${title}</h2><div class="long-answer-box">${dataValue || '未填寫'}</div>`;
+            }
+
+            // 使用轉義後的數據 (escapedData) 來構建 HTML 內容
+            let htmlContent = `
+            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+            <head>
+                <meta charset='utf-8'>
+                <title>個案督導報告與概念化紀錄 - ${clientId}</title>
+                <style>
+                    body { font-family: "Microsoft JhengHei", sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+                    h1 { color: #1e40af; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 30px; font-size: 1.5em; }
+                    h2 { color: #374151; font-size: 1.2em; border-left: 5px solid #60a5fa; padding-left: 10px; margin-top: 20px; }
+                    p { margin-bottom: 10px; }
+                    strong { color: #1f2937; }
+                    
+                    /* 新增：區分問題與答案的樣式 */
+                    .answer-label { font-weight: 600; color: #374151; display: inline-block; min-width: 150px; }
+                    .answer-data { color: #1f2937; background-color: #f0f4f8; padding: 2px 8px; border-radius: 4px; border: 1px solid #e2e8f0; display: inline-block; font-weight: 500; }
+                    .long-answer-box { background-color: #ffffff; border: 1px dashed #cccccc; padding: 12px; margin-top: 5px; border-radius: 6px; color: #333333; }
+
+                    .summary-box { background-color: #f3f4f6; padding: 15px; border: 1px solid #e2e8f0; border-radius: 5px; margin-bottom: 20px; }
+                    .mask-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.9em; }
+                    .mask-table th, .mask-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    .mask-table th { background-color: #eef2ff; color: #374151; }
+                </style>
+            </head>
+            <body>
+                <h1 style="text-align: center;">個案督導報告與概念化紀錄</h1>
+                <p style="text-align: right; color: #6b7280; font-size: 0.8em;"><strong>報告生成時間：</strong> ${date}</p>
+                <div class="summary-box">
+                    <h2>整體概覽</h2>
+                    ${formatShortData('個案代號', escapedData.clientId)}
+                    ${formatShortData('會談日期', escapedData.sessionDate)}
+                    ${formatShortData('年齡/性別', `${escapedData.clientAge || '未填'} 歲 / ${escapedData.clientGender || '未選'}`)}
+                    <p><span class="answer-label">最終行動建議：</span> <span class="answer-data" style="font-weight: bold; color: ${escapedData.actionPlan === '立即轉介（紅燈）' ? 'red' : escapedData.actionPlan === '暫緩觀察（黃燈）' ? 'orange' : 'green'}; background-color: #fff; border:none;">${escapedData.actionPlan || '未選'}</span></p>
+                </div>
+            `;
+
+            // --- I. 基礎資料與安全紅線 ---
+            htmlContent += `
+                <h1>I. 個案基礎資料與安全紅線</h1>
+                <h2>1. 基本資料</h2>
+                ${formatShortData('會談日期', escapedData.sessionDate)}
+                ${formatShortData('職業狀況', escapedData.occupationDetail)}
+                ${formatShortData('感情狀況', relationshipDetailText)}
+                ${formatLongData('家庭狀況（父母、手足、照顧者）', escapedData.familyStatus)}
+                
+                <h2>2. 醫療與風險評估</h2>
+                ${formatShortData('服藥狀況', escapedData.medicationStatus)}
+                ${escapedData.medicationStatus === '是' ? `<p style="margin-left: 20px; padding: 5px; border: 1px solid #dbeafe; background-color: #eff6ff;"><strong style="color:#1e40af;">💊 服藥詳細資訊：</strong> ${escapedData.medsInfo || '無'}</p>` : ''}
+                
+                ${formatShortData('自殺風險評估', escapedData.suicideRisk)}
+                ${escapedData.suicideRisk === '有' ? `<p style="margin-left: 20px; padding: 5px; border: 1px solid #fee2e2; background-color: #fef2f2; color:red;"><strong>⚠️ 風險處置詳細資訊：</strong> ${escapedData.riskDetails || '請緊急處理'}</p>` : ''}
+            `;
+
+            // --- II. 個案概念化核心與病理分析 ---
+            htmlContent += `
+                <h1>II. 個案概念化核心與病理分析</h1>
+                ${formatLongData('主訴與遭遇情境', escapedData.chiefComplaint)}
+                
+                <h2>2. 個人特質與病理描述</h2>
+                ${formatLongData('特質與個性', escapedData.personalityTraits)}
+                ${formatLongData('症狀特徵', escapedData.symptomFeatures)}
+                ${formatLongData('診斷與病史', escapedData.diagnosisHistory)}
+                
+                <h2>3. 背景與生命階段議題（讓個案立體化）</h2>
+                ${formatLongData('背景與生命階段議題', escapedData.contextualBackground)}
+            `;
+
+            // --- III. 潛意識深度洞察與療癒藍圖 (已更新) ---
+            htmlContent += `
+                <h1>III. 潛意識深度洞察與療癒藍圖</h1>
+                <h2>1. 核心信念與機制分析</h2>
+                ${formatLongData('核心信念', escapedData.coreBelief)}
+                
+                <h3>包裝（Masking）機制光譜參考</h3>
+                <table class="mask-table">
+                    <thead>
+                        <tr>
+                            <th>核心目的</th>
+                            <th>潛意識恐懼</th>
+                            <th>具體行為表現</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>關係連結</td><td>恐懼被遺棄、不再被愛</td><td>討好、表現完美、順從</td></tr>
+                        <tr><td>自我價值</td><td>恐懼平庸、恐懼被看不起</td><td>炫耀成就、過度努力</td></tr>
+                        <tr><td>保護他人</td><td>恐懼成為負擔、愧疚</td><td>報喜不報憂、隱忍痛苦</td></tr>
+                        <tr><td>情緒隔離</td><td>恐懼崩潰、無法處理負面情緒</td><td>理性化、甚至戴上快樂面具</td></tr>
+                        <tr><td style="color:red;">安全防禦</td><td style="color:red;">恐懼受傷、恐懼失控</td><td style="color:red;">冷漠、強勢、不在乎</td></tr>
+                    </tbody>
+                </table>
+
+                ${formatShortData('選定包裝動機', Array.isArray(escapedData.maskMotives) ? escapedData.maskMotives.join(', ') : escapedData.maskMotives || '無')}
+                ${formatLongData('包裝筆記', escapedData.maskNotes)}
+                ${formatLongData('維持現狀代價', escapedData.statusQuoCost)}
+                
+                <h2>2. 內在提問與潛意識狀態</h2>
+                ${formatLongData('最努力隱藏的情緒', escapedData.hiddenEmotion)}
+                ${formatLongData('內在小孩狀態描述', escapedData.innerChildState)}
+            `;
+
+            // --- IV. 臨床觀察與功能性評估 ---
+            htmlContent += `
+                <h1>IV. 臨床觀察與功能性評估</h1>
+                ${formatLongData('主觀觀察 (神情、表達、衣著)', escapedData.subjectiveObservation)}
+
+                <h2>2. 功能性評估</h2>
+                ${formatShortData('睡眠質量與時長', `${escapedData.sleepQuality || '未選'} (${escapedData.sleepDurationActual || '未填'})`)}
+                ${formatShortData('能量水平', escapedData.energyLevel)}
+                ${formatShortData('風險標籤', Array.isArray(escapedData.riskTags) ? escapedData.riskTags.join(', ') : escapedData.riskTags || '無')}
+                ${formatLongData('功能性行為筆記', escapedData.functionalNotes)}
+                
+                <h2>3. 非語言與關係信號</h2>
+                ${formatShortData('語氣一致性', `${escapedData.toneConsistency || '未選'} (${escapedData.toneNotes || '無'})`)}
+                ${formatShortData('肢體觀察標籤', Array.isArray(escapedData.bodyCues) ? escapedData.bodyCues.join(', ') : escapedData.bodyCues || '無')}
+                ${formatLongData('肢體筆記', escapedData.bodyNotes)}
+            `;
+
+            // --- V. 治療歷程與策略 ---
+            htmlContent += `
+                <h1>V. 治療歷程與策略規劃</h1>
+                <h2>1. 關係與催眠預備度</h2>
+                ${formatShortData('信任等級', escapedData.trustLevel)}
+                ${formatShortData('催眠反應', `${escapedData.tranceResponsiveness || '未選'} (${escapedData.tranceNotes || '無'})`)}
+                
+                <h2>2. 歷程總結與計畫</h2>
+                ${formatShortData('總次數/頻率', `${escapedData.totalSessions || '未填'} 次 / ${escapedData.sessionFrequency || '未填'}`)}
+                ${formatLongData('個案期待與主要困擾', escapedData.clientExpectations)}
+                ${formatLongData('治療取向與計畫', escapedData.approachPlan)}
+                ${formatLongData('策略與資源建構目標', escapedData.strategyTarget)}
+                ${formatLongData('療程進展摘要', escapedData.progressSummary)}
+            `;
+
+            // --- VI. 歷程觀察與督導問題 ---
+            htmlContent += `
+                <h1>VI. 歷程觀察與督導問題</h1>
+                ${formatLongData('特殊事件與轉折點', escapedData.specialIncidents)}
+                ${formatLongData('督導中討論問題', escapedData.supervisionQuestions)}
+                ${formatLongData('可深入探討的點', escapedData.deepDivePoints)}
+            `;
+
+
+            htmlContent += `</body></html>`;
+            return htmlContent;
+        }
+
+
+        document.getElementById('assessment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = {};
+
+            // Collect all form data (Handling multiple checkbox values correctly)
+            for (const [key, value] of formData.entries()) {
+                if (key.endsWith('[]')) { 
+                    const cleanKey = key.slice(0, -2);
+                    if (!data[cleanKey]) {
+                        data[cleanKey] = [];
+                    }
+                    data[cleanKey].push(value);
+                } else if (key in data && key !== 'maskMotives' && key !== 'riskTags' && key !== 'bodyCues') {
+                    if (Array.isArray(data[key])) {
+                        data[key].push(value);
+                    } else {
+                        data[key] = [data[key], value];
+                    }
+                }
+                else {
+                    data[key] = value;
+                }
+            }
+            
+            // Checkbox arrays consolidation for keys not ending in []
+            data.maskMotives = formData.getAll('maskMotives');
+            data.riskTags = formData.getAll('riskTags');
+            data.bodyCues = formData.getAll('bodyCues');
+
+            const content = generateWordContent(data);
+            const filename = \`個案督導報告_\${data.clientId || '未命名個案'}_\${data.sessionDate || new Date().toISOString().substring(0, 10)}.doc\`;
+
+            // Create a Blob with the content and set the MIME type for MS Word compatibility
+            const blob = new Blob([content], {
+                type: 'application/msword;charset=utf-8'
+            });
+
+            // Trigger the download
+            if (window.navigator.msSaveOrOpenBlob) { // For IE and Edge
+                window.navigator.msSaveOrOpenBlob(blob, filename);
+            } else {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            console.log("Word file download initiated for:", data.clientId);
+        });
+        
+        // 初始化一次，確保初始狀態正確
+        window.onload = function() {
+            document.getElementById('session-date').value = new Date().toISOString().substring(0, 10);
+            toggleRelationshipDetails(); // 確保初始狀態是單身/未婚，隱藏細節
+        };
+    </script>
+</body>
+</html>
