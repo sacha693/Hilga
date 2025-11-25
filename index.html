@@ -66,9 +66,10 @@
         <header class="text-center mb-8">
             <h1 class="text-3xl font-extrabold text-blue-800 mb-2">個案督導報告與概念化儀表板</h1>
             <p class="text-lg text-gray-600">結構化紀錄與深度臨床反思模板</p>
-            <p id="user-info" class="text-sm text-gray-400 mt-2"></p>
+            <p id="app-info" class="text-sm text-gray-400 mt-2">使用 POST 哲學處理資料：資料在瀏覽器內部處理，不會曝光於網址中。</p>
         </header>
 
+        <!-- 表單：不會真正發送 GET 請求，只用於 JavaScript 內部數據收集 -->
         <form id="assessment-form">
             
             <!-- BLOCK I: 基礎資料與紅線安全 -->
@@ -329,7 +330,7 @@
                 <div class="grid md:grid-cols-2 gap-4">
                     <div class="mb-4">
                         <label class="font-semibold text-gray-700">語氣與內容一致性<span class="text-red-500">*</span></label>
-                        <div class="flex flex-wrap gap-2 mt-2 text-sm">
+                        <div class="flex flex-wrap gap-2 mt-2 text-xs md:text-sm">
                             <input type="radio" id="tone-1" name="toneConsistency" value="一致" class="hidden" required><label for="tone-1" class="rating-label bg-green-100 text-green-800">🟢 一致</label>
                             <input type="radio" id="tone-2" name="toneConsistency" value="輕微脫節" class="hidden"><label for="tone-2" class="rating-label bg-yellow-100 text-yellow-800">🟡 輕微脫節</label>
                             <input type="radio" id="tone-3" name="toneConsistency" value="嚴重脫節" class="hidden"><label for="tone-3" class="rating-label bg-red-100 text-red-800">🔴 嚴重脫節</label>
@@ -450,16 +451,7 @@
     </div>
 
     <script>
-        // -- Firebase / Environment Mock Setup --
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hypnosis-dashboard-101';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-        
-        // Mock User ID generation since Firebase is not fully implemented in this prototype
-        const userId = 'hypnotist-' + crypto.randomUUID().substring(0, 8); 
-
-        document.getElementById('user-info').textContent = `App ID: ${appId} | 使用者 ID: ${userId} | ${new Date().toLocaleString('zh-TW')}`;
-        // Set today's date as default
+        // 設定今天的日期為預設值
         document.getElementById('session-date').value = new Date().toISOString().substring(0, 10);
 
         function toggleMedsDetails(show) {
@@ -498,7 +490,7 @@
         }
 
         /**
-         * 【關鍵修正】HTML 轉義函數，用於安全地將用戶輸入插入到 HTML 字串中
+         * HTML 轉義函數：用於安全地將用戶輸入插入到 HTML 字串中 (POST 哲學的數據清潔步驟)
          * @param {string} unsafe - 來自用戶輸入的原始字串
          * @returns {string} 轉義後的字串
          */
@@ -509,17 +501,16 @@
                          .replace(/>/g, "&gt;")
                          .replace(/"/g, "&quot;")
                          .replace(/'/g, "&#039;")
-                         // 1. 處理所有換行符號 (\r\n, \n, \r) 轉換為 <br/>，防止破壞 JS 模板字串
+                         // 處理所有換行符號轉換為 <br/>
                          .replace(/(\r\n|\n|\r)/g, "<br/>") 
-                         // 2. 處理 JavaScript Template Literal 的關鍵字元：反引號 (`)
+                         // 處理 JavaScript Template Literal 的關鍵字元：反引號 (`)
                          .replace(/`/g, "&#x60;") 
-                         // 3. 處理反斜線 (\)，防止它意外轉義 JS 模板字串中的其他字元
+                         // 處理反斜線 (\)
                          .replace(/\\/g, "&#92;"); 
         }
 
 
         // --- Word Generation Logic ---
-
         function generateWordContent(data) {
             
             // 1. 對所有輸入數據進行轉義，以避免語法錯誤和 HTML 注入
@@ -702,13 +693,14 @@
 
 
         document.getElementById('assessment-form').addEventListener('submit', function(e) {
+            // 【關鍵修正】：使用 e.preventDefault() 阻止瀏覽器執行預設的 GET 請求行為
             e.preventDefault();
             
             const form = e.target;
             const formData = new FormData(form);
             const data = {};
 
-            // Collect all form data (Handling multiple checkbox values correctly)
+            // 收集所有表單數據
             for (const [key, value] of formData.entries()) {
                 if (key.endsWith('[]')) { 
                     const cleanKey = key.slice(0, -2);
@@ -728,27 +720,28 @@
                 }
             }
             
-            // Checkbox arrays consolidation for keys not ending in []
+            // 處理多選框的數據
             data.maskMotives = formData.getAll('maskMotives');
             data.riskTags = formData.getAll('riskTags');
             data.bodyCues = formData.getAll('bodyCues');
 
+            // 呼叫內部函數生成 Word 內容
             const content = generateWordContent(data);
             
-            // 【修正點 1】對檔名中的變數進行嚴格清理，防止非法字元或模板字串中斷
+            // 清理檔名變數，確保檔案系統安全且不會中斷程式碼
             const cleanClientId = (data.clientId || '未命名個案').replace(/[<>:"/\\|?*`]/g, '_');
             const cleanSessionDate = (data.sessionDate || new Date().toISOString().substring(0, 10)).replace(/[<>:"/\\|?*`]/g, '_');
             
-            // 使用清理後的變數來組裝檔名
             const filename = `個案督導報告_${cleanClientId}_${cleanSessionDate}.doc`;
 
-            // Create a Blob with the content and set the MIME type for MS Word compatibility
+            // 創建 Blob (二進制大對象)，這是將數據視為 POST Body 進行內部處理後，
+            // 轉換為可下載檔案的步驟。資料在此步驟中是安全的。
             const blob = new Blob([content], {
                 type: 'application/msword;charset=utf-8'
             });
 
-            // Trigger the download
-            if (window.navigator.msSaveOrOpenBlob) { // For IE and Edge
+            // 觸發下載 (Client-Side 下載，不需要外部伺服器)
+            if (window.navigator.msSaveOrOpenBlob) { 
                 window.navigator.msSaveOrOpenBlob(blob, filename);
             } else {
                 const url = URL.createObjectURL(blob);
@@ -761,7 +754,7 @@
                 URL.revokeObjectURL(url);
             }
 
-            console.log("Word file download initiated for:", data.clientId);
+            console.log("Word file download initiated via POST philosophy (internal processing):", data.clientId);
         });
         
         // 初始化一次，確保初始狀態正確
