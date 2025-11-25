@@ -305,10 +305,10 @@
                 <div class="mb-4">
                     <label class="font-semibold text-gray-700">2. 能量/精力水平<span class="text-red-500">*</span></label>
                     <div class="flex flex-wrap gap-2 mt-2">
-                        <input type="radio" id="energy-1" name="energyLevel" value="正常" class="hidden" required><label for="energy-1" class="rating-label">正常範圍（平穩）</label>
-                        <input type="radio" id="energy-2" name="energyLevel" value="持續低落" class="hidden"><label for="energy-2" class="rating-label bg-yellow-100 text-yellow-800">持續低落（鬱期傾向）</label>
-                        <input type="radio" id="energy-3" name="energyLevel" value="輕度亢奮" class="hidden"><label for="energy-3" class="rating-label bg-orange-100 text-orange-800">輕度亢奮（話多）</label>
-                        <input type="radio" id="energy-4" name="energyLevel" value="高度亢奮" class="hidden"><label for="energy-4" class="rating-label bg-red-100 text-red-800">高度亢奮（躁期傾向）</label>
+                        <input type="radio" id="energy-1" name="energyLevel" value="正常範圍（平穩）" class="hidden" required><label for="energy-1" class="rating-label">正常範圍（平穩）</label>
+                        <input type="radio" id="energy-2" name="energyLevel" value="持續低落（缺乏活力）" class="hidden"><label for="energy-2" class="rating-label bg-yellow-100 text-yellow-800">持續低落（缺乏活力）</label>
+                        <input type="radio" id="energy-3" name="energyLevel" value="輕度亢奮（情緒高漲）" class="hidden"><label for="energy-3" class="rating-label bg-orange-100 text-orange-800">輕度亢奮（情緒高漲）</label>
+                        <input type="radio" id="energy-4" name="energyLevel" value="高度亢奮（難以控制）" class="hidden"><label for="energy-4" class="rating-label bg-red-100 text-red-800">高度亢奮（難以控制）</label>
                     </div>
                 </div>
                 
@@ -499,7 +499,6 @@
 
         /**
          * 【關鍵修正】HTML 轉義函數，用於安全地將用戶輸入插入到 HTML 字串中
-         * 專門處理所有可能破壞 JavaScript Template Literal (`) 結構的字元。
          * @param {string} unsafe - 來自用戶輸入的原始字串
          * @returns {string} 轉義後的字串
          */
@@ -735,7 +734,13 @@
             data.bodyCues = formData.getAll('bodyCues');
 
             const content = generateWordContent(data);
-            const filename = \`個案督導報告_\${data.clientId || '未命名個案'}_\${data.sessionDate || new Date().toISOString().substring(0, 10)}.doc\`;
+            
+            // 【修正點 1】對檔名中的變數進行嚴格清理，防止非法字元或模板字串中斷
+            const cleanClientId = (data.clientId || '未命名個案').replace(/[<>:"/\\|?*`]/g, '_');
+            const cleanSessionDate = (data.sessionDate || new Date().toISOString().substring(0, 10)).replace(/[<>:"/\\|?*`]/g, '_');
+            
+            // 使用清理後的變數來組裝檔名
+            const filename = `個案督導報告_${cleanClientId}_${cleanSessionDate}.doc`;
 
             // Create a Blob with the content and set the MIME type for MS Word compatibility
             const blob = new Blob([content], {
