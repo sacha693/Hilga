@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>靈魂的遞歸 | 瑞光沙舟心流所</title>
+    <title>靈魂的遞歸 | 潛意識的領航員</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -135,12 +135,8 @@
 
         <!-- Quote Content Area -->
         <div id="quote-container" class="mb-10 min-h-[300px] w-full max-w-2xl mx-auto flex flex-col justify-center">
-            <!-- Loading State -->
-            <div id="loader" class="hidden py-10">
-                <i class="fas fa-compass fa-spin text-4xl text-[#8d6e63]"></i>
-                <p class="text-sm text-gray-500 mt-4">正在探索意識海洋...</p>
-            </div>
-
+            <!-- Loader removed for instant feedback -->
+            
             <!-- Content -->
             <div id="content-area" class="fade-in">
                 <div class="mb-6">
@@ -532,39 +528,39 @@
 
         function renderRandomQuote() {
             const contentArea = document.getElementById('content-area');
-            const loader = document.getElementById('loader');
+            // Loader logic removed to enhance perceived performance (Snappiness)
             
-            // Animation Out
+            // 1. Fade Out (Visual Transition)
             contentArea.classList.remove('fade-in');
             contentArea.style.opacity = '0';
-            contentArea.style.display = 'none';
-            loader.classList.remove('hidden');
             
-            // Simulate fetch delay for feeling
+            // 2. Reduce delay significantly (from 600ms to 200ms)
+            // Just enough for the opacity transition to be felt, but not enough to feel like "waiting"
             setTimeout(() => {
                 currentQuote = getRandomQuote();
                 
-                // Update DOM
+                // 3. Update Text Content (Instant)
                 document.getElementById('quote-zh').innerText = currentQuote.chinese;
                 document.getElementById('quote-original').innerText = currentQuote.original;
                 document.getElementById('quote-author').innerText = `— ${currentQuote.author}`;
                 document.getElementById('quote-essay').innerText = currentQuote.essay;
 
-                // Update Background
+                // 4. Fade In Text Immediately
+                contentArea.classList.add('fade-in');
+                contentArea.style.opacity = '1';
+
+                // 5. Load Background Asynchronously (Non-blocking)
                 const bgUrl = getBackgroundImage(currentQuote.keyword);
                 
-                // Create a temp image to load background smoothly
+                // Create a temp image to load background smoothly in the background
                 const img = new Image();
                 img.src = bgUrl;
                 img.onload = () => {
+                     // Only update background when fully loaded
                      document.body.style.backgroundImage = `url('${bgUrl}')`;
-                     loader.classList.add('hidden');
-                     contentArea.style.display = 'block';
-                     contentArea.classList.add('fade-in');
-                     contentArea.style.opacity = '1';
                 };
                 
-            }, 600);
+            }, 200);
         }
 
         function copyQuote() {
