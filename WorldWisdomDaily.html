@@ -16,7 +16,6 @@
             --paper-color: #fdfbf7;
             --ink-color: #2c3e50;
             --accent-color: #d35400;
-            --brand-blue: #2c3e50; /* Matches the dark blue in your logo text */
         }
 
         body {
@@ -28,10 +27,15 @@
             background-position: center;
             background-attachment: fixed;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
 
         .bg-overlay {
-            background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5));
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));
             position: fixed;
             top: 0;
             left: 0;
@@ -40,12 +44,16 @@
             z-index: -1;
         }
 
+        /* The "Card" itself */
         .card-glass {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            background: rgba(255, 255, 255, 0.92); /* Slightly more opaque for the card look */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.1), 
+                0 5px 15px rgba(0,0,0,0.05); /* Deep shadow for "floating card" effect */
+            position: relative;
         }
 
         .quote-original {
@@ -58,20 +66,36 @@
         }
         
         .logo-font-zh {
-            font-family: 'Zen Maru Gothic', sans-serif; /* Rounded feel similar to logo */
+            font-family: 'Zen Maru Gothic', sans-serif;
             letter-spacing: 0.1em;
         }
 
-        .btn-warm {
-            background-color: #8d6e63;
-            color: #fff;
+        /* External Buttons Styling */
+        .btn-control {
+            background-color: rgba(255, 255, 255, 0.25); /* Semi-transparent */
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
         }
 
-        .btn-warm:hover {
-            background-color: #6d4c41;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        .btn-control:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8d6e63 0%, #6d4c41 100%);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 15px rgba(109, 76, 65, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(109, 76, 65, 0.6);
         }
 
         .fade-in {
@@ -91,101 +115,91 @@
             margin: 1rem auto;
         }
 
-        /* Logo SVG Styling */
         .logo-svg path {
             stroke-linecap: round;
             stroke-linejoin: round;
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body>
 
     <div class="bg-overlay"></div>
 
-    <!-- Main Container -->
-    <main class="w-full max-w-4xl card-glass rounded-3xl p-6 md:p-12 relative overflow-hidden text-center flex flex-col items-center">
+    <!-- The Artifact (Card) -->
+    <main class="w-full max-w-3xl card-glass rounded-[2rem] p-8 md:p-12 relative overflow-hidden text-center flex flex-col items-center mb-8 min-h-[600px]">
         
-        <!-- Header with Custom Logo -->
-        <header class="mb-10 w-full flex flex-col items-center justify-center">
-            <div class="flex items-center justify-center gap-4 mb-2 transform hover:scale-105 transition-transform duration-500 cursor-default">
-                <!-- SVG Recreation of the Sailboat Logo -->
-                <svg width="80" height="80" viewBox="0 0 100 100" class="logo-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Boat Hull -->
-                    <path d="M15 65 C 15 65, 30 90, 85 75" stroke="#1a1a1a" stroke-width="5" fill="none"/>
-                    <path d="M15 65 L 85 75" stroke="#1a1a1a" stroke-width="5" />
-                    <!-- Left Sail -->
-                    <path d="M50 60 C 20 60, 25 30, 50 15" stroke="#1a1a1a" stroke-width="5" fill="rgba(245, 222, 179, 0.3)"/>
-                    <!-- Right Sail -->
-                    <path d="M55 62 L 55 15 L 75 65 Z" stroke="#1a1a1a" stroke-width="5" fill="rgba(245, 222, 179, 0.3)"/>
-                    <!-- Mast Top Star -->
-                    <path d="M52 15 L 52 5 M 47 10 L 57 10 M 49 7 L 55 13 M 55 7 L 49 13" stroke="#1a1a1a" stroke-width="3" />
-                    <!-- Waves -->
-                    <path d="M30 85 Q 45 95 60 85 T 90 85" stroke="#5c6bc0" stroke-width="3" stroke-opacity="0.6" />
-                    <path d="M35 92 Q 50 100 65 92" stroke="#5c6bc0" stroke-width="3" stroke-opacity="0.6" />
-                </svg>
-                
-                <!-- Text Part of Logo -->
-                <div class="text-left flex flex-col justify-center">
-                    <h2 class="text-sm md:text-base font-bold text-[#2c3e50] logo-font-en mb-0">瑞光沙舟心流所</h2>
-                    <h1 class="text-xl md:text-3xl font-bold text-[#1a237e] logo-font-zh leading-tight">潛意識的領航員</h1>
-                </div>
+        <!-- 1. Header (Tag Style) -->
+        <header class="mb-12 w-full flex flex-col items-center justify-center">
+            <!-- Tag Design: Capsule shape, subtle background, border -->
+            <div class="inline-block px-5 py-2 rounded-full bg-[#f5f0e6] border border-[#e6dfd1] shadow-sm">
+                <p class="text-[11px] text-[#8d6e63] tracking-[0.2em] font-medium">— 靈魂的遞歸 · 瑞光沙舟 —</p>
             </div>
-            <p class="text-xs text-gray-500 mt-2 tracking-widest">— 靈魂的遞歸 · 每日智慧 —</p>
         </header>
 
-        <!-- Quote Content Area -->
-        <div id="quote-container" class="mb-10 min-h-[300px] w-full max-w-2xl mx-auto flex flex-col justify-center">
-            <!-- Loader removed for instant feedback -->
-            
-            <!-- Content -->
+        <!-- 2. Quote Content (Flexible Height) -->
+        <div id="quote-container" class="flex-grow flex flex-col justify-center w-full max-w-2xl mx-auto mb-10">
             <div id="content-area" class="fade-in">
-                <div class="mb-6">
-                    <i class="fas fa-quote-left text-3xl text-orange-800 opacity-20 mb-4 block"></i>
-                    <h2 id="quote-zh" class="text-2xl md:text-3xl font-bold leading-relaxed text-gray-900 mb-6 px-4">
-                        <!-- Chinese Quote Goes Here -->
+                <!-- Quote with Centered Icon -->
+                <div class="mb-6 relative">
+                    <div class="flex justify-center mb-4">
+                        <i class="fas fa-quote-left text-4xl text-orange-800 opacity-20"></i>
+                    </div>
+                    
+                    <h2 id="quote-zh" class="relative z-10 text-2xl md:text-3xl font-bold leading-relaxed text-gray-800 mb-6 px-4">
+                        <!-- Chinese Quote -->
                     </h2>
                     <div class="signature-line"></div>
                 </div>
 
-                <div class="mb-8">
-                    <p id="quote-original" class="quote-original text-lg md:text-xl text-gray-600 italic mb-2 px-4">
-                        <!-- Original Quote Goes Here -->
+                <!-- Original & Author -->
+                <div class="mb-10">
+                    <p id="quote-original" class="quote-original text-lg text-gray-600 italic mb-2 px-4">
+                        <!-- Original Quote -->
                     </p>
-                    <p id="quote-author" class="text-sm font-bold text-gray-800 tracking-wide uppercase mt-4">
-                        <!-- Author Goes Here -->
+                    <p id="quote-author" class="text-xs font-bold text-gray-500 tracking-widest uppercase mt-4">
+                        <!-- Author -->
                     </p>
                 </div>
 
-                <!-- The Philosopher's Note -->
+                <!-- Essay (Note) - Warm Style -->
                 <div class="bg-orange-50 bg-opacity-60 rounded-xl p-6 text-left border-l-4 border-[#8d6e63] shadow-inner mx-2">
                     <h3 class="text-sm font-bold text-[#6d4c41] mb-2 flex items-center">
                         <i class="fas fa-lightbulb mr-2 text-yellow-600"></i> 領航員筆記
                     </h3>
                     <p id="quote-essay" class="text-gray-700 text-sm md:text-base leading-relaxed text-justify">
-                        <!-- Essay Goes Here -->
+                        <!-- Essay -->
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- Controls -->
-        <div class="flex flex-wrap justify-center gap-4 mt-4">
-            <button onclick="copyQuote()" class="p-3 px-5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors flex items-center gap-2" title="收藏這份智慧">
-                <i class="fas fa-bookmark"></i> <span class="text-sm">收藏</span>
-            </button>
-            <button onclick="renderRandomQuote()" class="btn-warm px-8 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 transform active:scale-95 transition-all">
-                <i class="fas fa-dharmachakra"></i> 轉動生命羅盤
-            </button>
+        <!-- 3. Inner Footer (Card Signature) -->
+        <div class="mt-auto pt-6 border-t border-gray-100 w-full">
+            <p class="text-gray-500 text-[10px] tracking-widest font-mono">
+                &copy; 2025 瑞光沙舟心流所
+            </p>
         </div>
 
     </main>
 
-    <footer class="absolute bottom-4 text-white/70 text-xs text-center w-full drop-shadow-md">
-        <p>&copy; 2025 潛意識的領航員. All rights reserved.</p>
-    </footer>
+    <!-- External Controls (Outside the Card) -->
+    <div class="fixed-bottom-controls flex justify-center gap-6 z-20 w-full max-w-md mx-auto px-4">
+        
+        <!-- Copy Button (Secondary) -->
+        <button onclick="copyQuote()" class="btn-control p-4 rounded-full flex items-center justify-center w-14 h-14" title="收藏這份智慧">
+            <i class="fas fa-bookmark text-xl"></i>
+        </button>
+        
+        <!-- Main Action Button (Primary) -->
+        <button onclick="renderRandomQuote()" class="btn-primary px-8 py-3 rounded-full font-bold text-lg flex items-center gap-3 flex-grow justify-center max-w-[240px]">
+            <i class="fas fa-compass fa-spin-hover"></i> 
+            <span>轉動羅盤</span>
+        </button>
+
+    </div>
 
     <script>
-        // Expanded Database: > 50 Quotes
+        // Database (Same robust list)
         const quotesDB = [
             {
                 chinese: "當你凝視深淵時，深淵也在凝視你。",
@@ -292,7 +306,6 @@
                 essay: "獻給所有的創新者與夢想家。不要因為別人的無法理解而關掉你的音樂，繼續跳舞吧，直到世界跟上你的節奏。",
                 keyword: "dance"
             },
-            // --- NEW QUOTES ADDED BELOW ---
             {
                 chinese: "向外看的人在作夢，向內看的人醒著。",
                 original: "Who looks outside, dreams; who looks inside, awakes.",
@@ -514,11 +527,9 @@
 
         // Image placeholder service logic
         function getBackgroundImage(keyword) {
-            // Using a high quality placeholder service that supports keywords to match the "vibe"
             return `https://image.pollinations.ai/prompt/${keyword}%20scenery%20nature%20cinematic%20warm%20light?width=1280&height=720&nologo=true`;
         }
 
-        // Logic
         let currentQuote = {};
 
         function getRandomQuote() {
@@ -528,35 +539,30 @@
 
         function renderRandomQuote() {
             const contentArea = document.getElementById('content-area');
-            // Loader logic removed to enhance perceived performance (Snappiness)
             
-            // 1. Fade Out (Visual Transition)
+            // 1. Fade Out
             contentArea.classList.remove('fade-in');
             contentArea.style.opacity = '0';
             
-            // 2. Reduce delay significantly (from 600ms to 200ms)
-            // Just enough for the opacity transition to be felt, but not enough to feel like "waiting"
+            // 2. Short Delay
             setTimeout(() => {
                 currentQuote = getRandomQuote();
                 
-                // 3. Update Text Content (Instant)
+                // 3. Update Text
                 document.getElementById('quote-zh').innerText = currentQuote.chinese;
                 document.getElementById('quote-original').innerText = currentQuote.original;
                 document.getElementById('quote-author').innerText = `— ${currentQuote.author}`;
                 document.getElementById('quote-essay').innerText = currentQuote.essay;
 
-                // 4. Fade In Text Immediately
+                // 4. Fade In Text
                 contentArea.classList.add('fade-in');
                 contentArea.style.opacity = '1';
 
-                // 5. Load Background Asynchronously (Non-blocking)
+                // 5. Load Background Async
                 const bgUrl = getBackgroundImage(currentQuote.keyword);
-                
-                // Create a temp image to load background smoothly in the background
                 const img = new Image();
                 img.src = bgUrl;
                 img.onload = () => {
-                     // Only update background when fully loaded
                      document.body.style.backgroundImage = `url('${bgUrl}')`;
                 };
                 
@@ -566,7 +572,6 @@
         function copyQuote() {
             const text = `${currentQuote.chinese}\n${currentQuote.original} — ${currentQuote.author}`;
             
-            // Use execCommand as fallback for iframe environments blocking clipboard API
             const textArea = document.createElement("textarea");
             textArea.value = text;
             textArea.style.position = "fixed";
@@ -579,10 +584,10 @@
             try {
                 const successful = document.execCommand('copy');
                 if (successful) {
-                    // Visual Feedback
                     const btn = document.querySelector('button[title="收藏這份智慧"]');
                     const originalHTML = btn.innerHTML;
-                    btn.innerHTML = '<i class="fas fa-check text-green-600"></i> <span class="text-green-700">已複製</span>';
+                    // Change icon to check
+                    btn.innerHTML = '<i class="fas fa-check text-green-400"></i>';
                     setTimeout(() => btn.innerHTML = originalHTML, 2000);
                 } else {
                     console.warn('Copy command unsuccessful');
