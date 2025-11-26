@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>靈魂的遞歸 | 瑞光沙舟心流所</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --paper-color: #fdfbf7;
+            --ink-color: #2c3e50;
+            --accent-color: #d35400;
+            --brand-blue: #2c3e50; /* Matches the dark blue in your logo text */
+        }
+
+        body {
+            font-family: 'Noto Serif TC', serif;
+            background-color: #eaddcf;
+            color: var(--ink-color);
+            transition: background-image 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .bg-overlay {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5));
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .card-glass {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+        }
+
+        .quote-original {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .logo-font-en {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            letter-spacing: 0.05em;
+        }
+        
+        .logo-font-zh {
+            font-family: 'Zen Maru Gothic', sans-serif; /* Rounded feel similar to logo */
+            letter-spacing: 0.1em;
+        }
+
+        .btn-warm {
+            background-color: #8d6e63;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warm:hover {
+            background-color: #6d4c41;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .signature-line {
+            width: 50px;
+            height: 2px;
+            background-color: var(--accent-color);
+            margin: 1rem auto;
+        }
+
+        /* Logo SVG Styling */
+        .logo-svg path {
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-overlay"></div>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-4xl card-glass rounded-3xl p-6 md:p-12 relative overflow-hidden text-center flex flex-col items-center">
+        
+        <!-- Header with Custom Logo -->
+        <header class="mb-10 w-full flex flex-col items-center justify-center">
+            <div class="flex items-center justify-center gap-4 mb-2 transform hover:scale-105 transition-transform duration-500 cursor-default">
+                <!-- SVG Recreation of the Sailboat Logo -->
+                <svg width="80" height="80" viewBox="0 0 100 100" class="logo-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Boat Hull -->
+                    <path d="M15 65 C 15 65, 30 90, 85 75" stroke="#1a1a1a" stroke-width="5" fill="none"/>
+                    <path d="M15 65 L 85 75" stroke="#1a1a1a" stroke-width="5" />
+                    <!-- Left Sail -->
+                    <path d="M50 60 C 20 60, 25 30, 50 15" stroke="#1a1a1a" stroke-width="5" fill="rgba(245, 222, 179, 0.3)"/>
+                    <!-- Right Sail -->
+                    <path d="M55 62 L 55 15 L 75 65 Z" stroke="#1a1a1a" stroke-width="5" fill="rgba(245, 222, 179, 0.3)"/>
+                    <!-- Mast Top Star -->
+                    <path d="M52 15 L 52 5 M 47 10 L 57 10 M 49 7 L 55 13 M 55 7 L 49 13" stroke="#1a1a1a" stroke-width="3" />
+                    <!-- Waves -->
+                    <path d="M30 85 Q 45 95 60 85 T 90 85" stroke="#5c6bc0" stroke-width="3" stroke-opacity="0.6" />
+                    <path d="M35 92 Q 50 100 65 92" stroke="#5c6bc0" stroke-width="3" stroke-opacity="0.6" />
+                </svg>
+                
+                <!-- Text Part of Logo -->
+                <div class="text-left flex flex-col justify-center">
+                    <h2 class="text-sm md:text-base font-bold text-[#2c3e50] logo-font-en mb-0">瑞光沙舟心流所</h2>
+                    <h1 class="text-xl md:text-3xl font-bold text-[#1a237e] logo-font-zh leading-tight">潛意識的領航員</h1>
+                </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2 tracking-widest">— 靈魂的遞歸 · 每日智慧 —</p>
+        </header>
+
+        <!-- Quote Content Area -->
+        <div id="quote-container" class="mb-10 min-h-[300px] w-full max-w-2xl mx-auto flex flex-col justify-center">
+            <!-- Loading State -->
+            <div id="loader" class="hidden py-10">
+                <i class="fas fa-compass fa-spin text-4xl text-[#8d6e63]"></i>
+                <p class="text-sm text-gray-500 mt-4">正在探索意識海洋...</p>
+            </div>
+
+            <!-- Content -->
+            <div id="content-area" class="fade-in">
+                <div class="mb-6">
+                    <i class="fas fa-quote-left text-3xl text-orange-800 opacity-20 mb-4 block"></i>
+                    <h2 id="quote-zh" class="text-2xl md:text-3xl font-bold leading-relaxed text-gray-900 mb-6 px-4">
+                        <!-- Chinese Quote Goes Here -->
+                    </h2>
+                    <div class="signature-line"></div>
+                </div>
+
+                <div class="mb-8">
+                    <p id="quote-original" class="quote-original text-lg md:text-xl text-gray-600 italic mb-2 px-4">
+                        <!-- Original Quote Goes Here -->
+                    </p>
+                    <p id="quote-author" class="text-sm font-bold text-gray-800 tracking-wide uppercase mt-4">
+                        <!-- Author Goes Here -->
+                    </p>
+                </div>
+
+                <!-- The Philosopher's Note -->
+                <div class="bg-orange-50 bg-opacity-60 rounded-xl p-6 text-left border-l-4 border-[#8d6e63] shadow-inner mx-2">
+                    <h3 class="text-sm font-bold text-[#6d4c41] mb-2 flex items-center">
+                        <i class="fas fa-lightbulb mr-2 text-yellow-600"></i> 領航員筆記
+                    </h3>
+                    <p id="quote-essay" class="text-gray-700 text-sm md:text-base leading-relaxed text-justify">
+                        <!-- Essay Goes Here -->
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex flex-wrap justify-center gap-4 mt-4">
+            <button onclick="copyQuote()" class="p-3 px-5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors flex items-center gap-2" title="收藏這份智慧">
+                <i class="fas fa-bookmark"></i> <span class="text-sm">收藏</span>
+            </button>
+            <button onclick="renderRandomQuote()" class="btn-warm px-8 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 transform active:scale-95 transition-all">
+                <i class="fas fa-dharmachakra"></i> 轉動生命羅盤
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="absolute bottom-4 text-white/70 text-xs text-center w-full drop-shadow-md">
+        <p>&copy; 2025 潛意識的領航員. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Expanded Database: > 50 Quotes
+        const quotesDB = [
+            {
+                chinese: "當你凝視深淵時，深淵也在凝視你。",
+                original: "Wenn du lange in einen Abgrund blickst, blickt der Abgrund auch in dich hinein.",
+                author: "Friedrich Nietzsche (尼采)",
+                essay: "這不僅是對危險的警告，更是關於「同化」的心理學隱喻。當我們過度專注於對抗負面事物（如仇恨、悲傷或程式碼中的 Bug）時，我們必須小心不要讓這些負面特質也滲透進自己的靈魂。保持覺察，是保護內心的防火牆。",
+                keyword: "abyss"
+            },
+            {
+                chinese: "在隆冬時刻，我終於發現，我的內心裡有一個不可戰勝的夏天。",
+                original: "Au milieu de l'hiver, j'ai découvert en moi un invincible été.",
+                author: "Albert Camus (卡繆)",
+                essay: "存在主義最溫暖的一句話。無論外在環境如何嚴酷（隆冬），人類的韌性（夏天）始終存在於內心深處。這是一種對抗荒謬世界的反叛精神——即使痛苦，我們仍選擇快樂與希望。",
+                keyword: "summer"
+            },
+            {
+                chinese: "生活不是等待風暴過去，而是學會在雨中跳舞。",
+                original: "Life is not about waiting for the storm to pass, it's about learning to dance in the rain.",
+                author: "Vivian Greene (薇薇安·葛林)",
+                essay: "我們無法預測所有的系統崩潰，也無法控制命運的無常。重點不在於「修復」天氣，而在於調整「心態」。在困境中尋找節奏感，將焦慮轉化為優雅的舞步，這就是適應力的最高境界。",
+                keyword: "rain"
+            },
+            {
+                chinese: "未經審視的生活是不值得過的。",
+                original: "Ὁ ... ἀνεξέταστος βίος οὐ βιωτὸς ἀνθρώπῳ.",
+                author: "Socrates (蘇格拉底)",
+                essay: "如同程式碼需要 Code Review 才能確保品質，我們的人生也需要不斷的反思與自我對話。如果不去思考「為什麼而活」，我們就只是在執行一套沒有靈魂的自動化腳本。",
+                keyword: "thought"
+            },
+            {
+                chinese: "傷口是你光線進入的地方。",
+                original: "The wound is the place where the Light enters you.",
+                author: "Rumi (魯米)",
+                essay: "我們常試圖隱藏脆弱與創傷，但在心理學與靈性層面上，正是這些裂痕打破了我們堅硬的自我防衛，讓同理心與智慧的光芒得以照進內心。痛苦不是懲罰，而是擴充心靈容量的契機。",
+                keyword: "light"
+            },
+            {
+                chinese: "真正重要的東西，用眼睛是看不見的。",
+                original: "L'essentiel est invisible pour les yeux.",
+                author: "Antoine de Saint-Exupéry (聖修伯里)",
+                essay: "在這個數據驅動的世界，我們習慣相信圖表與KPI，但愛、信任、勇氣與直覺這些構成生命核心的元素，是無法被量化的。用心去感受那些無法被「顯示」的價值，才是領航員的職責。",
+                keyword: "star"
+            },
+            {
+                chinese: "人不是被事情本身困擾，而是被他們對事情的看法所困擾。",
+                original: "Ταράσσει τοὺς ἀνθρώπους οὐ τὰ πράγματα, ἀλλὰ τὰ περὶ τῶν πραγμάτων δόγματα.",
+                author: "Epictetus (愛比克泰德)",
+                essay: "事件是客觀的（Input），情緒是主觀的（Output），而中間的「處理函式」就是我們的看法。我們也許無法改變發生的事，但我們可以重寫大腦對事件的解釋代碼，從而改變情緒的輸出。",
+                keyword: "mind"
+            },
+            {
+                chinese: "知人者智，自知者明。",
+                original: "知人者智，自知者明。",
+                author: "老子",
+                essay: "向外看的人擁有知識，向內看的人擁有覺知。我們花太多時間分析他人與世界，卻鮮少花時間 Debug 自己的內心。真正的清明，來自於理解自己的慾望、恐懼與極限。",
+                keyword: "reflection"
+            },
+            {
+                chinese: "如果你想造船，不要抓一批人來蒐集木材，不要指揮他們做這做那，你只要教他們嚮往浩瀚無邊的大海。",
+                original: "Si tu veux construire un bateau... fais-leur naître le désir de la mer.",
+                author: "Antoine de Saint-Exupéry (聖修伯里)",
+                essay: "功能性指令只能驅動手腳，願景才能驅動靈魂。無論是開發產品還是經營人生，找到那個讓人熱血沸騰的「為什麼」，比「怎麼做」更重要。",
+                keyword: "ocean"
+            },
+            {
+                chinese: "即使我知道明天世界就會毀滅，我今天還是會種下我的蘋果樹。",
+                original: "Wenn ich wüsste, dass morgen die Welt unterginge, würde ich heute noch mein Apfelbäumchen pflanzen.",
+                author: "Martin Luther (馬丁·路德)",
+                essay: "這是一種極致的「當下主義」。焦慮通常來自於對未來的不可控，但希望來自於對當下行動的堅持。無論結果如何，行動本身就賦予了生命意義。",
+                keyword: "tree"
+            },
+            {
+                chinese: "我們所想的，造就了我們。世界是思想建立起來的。",
+                original: "Whatever a monk keeps pursuing with his thinking and pondering, that becomes the inclination of his awareness.",
+                author: "Buddha (佛陀)",
+                essay: "你的心智是一個強大的編譯器。如果你輸入的是恐懼，世界就會編譯成地獄；如果你輸入的是慈悲，世界就會呈現為淨土。現實往往是我們內心投射的鏡像。",
+                keyword: "lotus"
+            },
+            {
+                chinese: "只有那些敢於走得太遠的人，才能發現一個人到底能走多遠。",
+                original: "Only those who will risk going too far can possibly find out how far one can go.",
+                author: "T.S. Eliot (T.S. 艾略特)",
+                essay: "舒適圈是溫暖的，但那裡沒有成長。只有在力竭與失敗的邊緣（Edge Cases），我們才能探測出潛能的真實上限。不要害怕「太過」，那是平庸與卓越的分界線。",
+                keyword: "road"
+            },
+            {
+                chinese: "不要溫順地走進那個良夜。",
+                original: "Do not go gentle into that good night.",
+                author: "Dylan Thomas (迪倫·湯馬斯)",
+                essay: "面對衰老、終結或不可避免的失敗時，人類的尊嚴在於「抵抗」。保持熱情，保持憤怒，保持對光的渴望，直到最後一刻燃燒殆盡。",
+                keyword: "night"
+            },
+            {
+                chinese: "最大的榮耀不在於從不跌倒，而在於每次跌倒後都能站起來。",
+                original: "Our greatest glory is not in never falling, but in rising every time we fall.",
+                author: "Confucius (孔子)",
+                essay: "接受失敗是過程的一部分，而非終點。這種「容錯率」與韌性（Resilience），比天賦更珍貴，也是系統能長期運行的關鍵。",
+                keyword: "mountain"
+            },
+            {
+                chinese: "別人眼中的瘋狂，只是因為他們聽不見你聽到的音樂。",
+                original: "And those who were seen dancing were thought to be insane by those who could not hear the music.",
+                author: "Friedrich Nietzsche (尼采)",
+                essay: "獻給所有的創新者與夢想家。不要因為別人的無法理解而關掉你的音樂，繼續跳舞吧，直到世界跟上你的節奏。",
+                keyword: "dance"
+            },
+            // --- NEW QUOTES ADDED BELOW ---
+            {
+                chinese: "向外看的人在作夢，向內看的人醒著。",
+                original: "Who looks outside, dreams; who looks inside, awakes.",
+                author: "Carl Jung (榮格)",
+                essay: "潛意識是巨大的冰山。我們大部分的行為都被潛意識驅動著。唯有透過內省，將潛意識意識化，我們才能真正掌控自己的命運，而不是被「命運」推著走。",
+                keyword: "dream"
+            },
+            {
+                chinese: "所有的煩惱，都是人際關係的煩惱。",
+                original: "All problems are interpersonal relationship problems.",
+                author: "Alfred Adler (阿德勒)",
+                essay: "這是個體心理學的震撼彈。我們的自卑、嫉妒、甚至孤獨，往往都來自於「比較」。若能從他人的評價中解放，擁有「被討厭的勇氣」，我們才能獲得真正的自由。",
+                keyword: "people"
+            },
+            {
+                chinese: "你的時間有限，所以不要浪費時間去過別人的生活。",
+                original: "Your time is limited, so don't waste it living someone else's life.",
+                author: "Steve Jobs (賈伯斯)",
+                essay: "社會有一套標準的演算法：求學、工作、退休。但你不是為了跑別人的腳本而生的。傾聽內心的聲音（Intuition），那裡才有屬於你自己的原始碼。",
+                keyword: "time"
+            },
+            {
+                chinese: "當你想要某種東西時，整個宇宙都會合力助你實現。",
+                original: "When you want something, all the universe conspires in helping you to achieve it.",
+                author: "Paulo Coelho (保羅·科爾賀)",
+                essay: "《牧羊少年奇幻之旅》的核心。這不是魔法，而是心理學上的「選擇性注意力」。當你全心全意專注於目標，你會開始看見以前忽略的機會與資源。",
+                keyword: "universe"
+            },
+            {
+                chinese: "無論你認為自己行，還是不行，你都是對的。",
+                original: "Whether you think you can, or you think you can't – you're right.",
+                author: "Henry Ford (亨利·福特)",
+                essay: "信念是自我應驗的預言（Self-fulfilling prophecy）。如果你在程式開頭就宣告了變數為 False，那麼後續的邏輯運算永遠跑不出 True 的結果。先改變信念，能力才會跟上。",
+                keyword: "engine"
+            },
+            {
+                chinese: "愛是唯一的解答。",
+                original: "Love is the only solution.",
+                author: "Dorothy Day (多蘿西·戴)",
+                essay: "在邏輯的世界裡，這聽起來很抽象。但在人類的系統裡，愛是唯一的「通用解碼器」。它能化解仇恨的加密，修復關係的斷連。當所有方法都無效時，試試愛吧。",
+                keyword: "heart"
+            },
+            {
+                chinese: "不要因為它結束了而哭泣，要因為它發生過而微笑。",
+                original: "Don't cry because it's over, smile because it happened.",
+                author: "Dr. Seuss (蘇斯博士)",
+                essay: "人類對「失去」有著本能的恐懼（Loss Aversion）。但如果我們將焦點從「失去所有權」轉移到「體驗過的記憶」，痛苦就會轉化為感恩。美好的回憶是無法被格式化的。",
+                keyword: "smile"
+            },
+            {
+                chinese: "如果你不飛，你就不知道自己有沒有翅膀。",
+                original: "If you don't fly, you don't know if you have wings.",
+                author: "Unknown",
+                essay: "試錯（Trial and Error）是學習的唯一路徑。站在懸崖邊猶豫，永遠計算不出空氣動力學。跳下去，在墜落中學習飛翔，這才是生命的演化方式。",
+                keyword: "bird"
+            },
+            {
+                chinese: "萬物皆有裂痕，那是光照進來的地方。",
+                original: "There is a crack in everything, that's how the light gets in.",
+                author: "Leonard Cohen (李歐納·柯恩)",
+                essay: "完美是無趣且封閉的。正是那些不完美、那些失敗、那些遺憾，構成了我們獨特的紋理。不要修補你的裂痕，讓它成為你發光的通道。",
+                keyword: "crack"
+            },
+            {
+                chinese: "世界以痛吻我，要我報之以歌。",
+                original: "The world has kissed my soul with its pain, asking for its return in songs.",
+                author: "Rabindranath Tagore (泰戈爾)",
+                essay: "這是詩人的煉金術。將痛苦（Pain）轉化為藝術（Art）。當生命給你檸檬時，不僅要做檸檬水，還要種出果園。昇華痛苦，是人類最高貴的能力。",
+                keyword: "song"
+            },
+            {
+                chinese: "我們不能用製造問題時的思維層次來解決問題。",
+                original: "We cannot solve our problems with the same thinking we used when we created them.",
+                author: "Albert Einstein (愛因斯坦)",
+                essay: "如果你陷入了死胡同（Infinite Loop），繼續在同一層邏輯裡打轉是無用的。你需要「跳出迴圈」，升級你的認知維度。唯有改變視角，答案才會顯現。",
+                keyword: "galaxy"
+            },
+            {
+                chinese: "勇氣不是沒有恐懼，而是認為有比恐懼更重要的東西。",
+                original: "Courage is not the absence of fear, but rather the judgment that something else is more important than fear.",
+                author: "Ambrose Redmoon",
+                essay: "恐懼是生物本能，是系統的警報機制。勇氣不是關掉警報，而是在警報聲大作時，依然選擇執行正確的指令。那是對價值觀的堅持。",
+                keyword: "lion"
+            },
+            {
+                chinese: "不要去解釋你自己。朋友不需要，敵人不相信。",
+                original: "Never explain yourself. Your friends don’t need it and your enemies won’t believe it.",
+                author: "Elbert Hubbard",
+                essay: "這句話教我們節省「運算資源」。對於懂你的人，共鳴是瞬間的；對於帶有偏見的人，解釋只是雜訊。把能量花在創造與行動上，而不是辯解。",
+                keyword: "silence"
+            },
+            {
+                chinese: "每一個不曾起舞的日子，都是對生命的辜負。",
+                original: "And lost be the day to us in which a measure hath not been danced.",
+                author: "Friedrich Nietzsche (尼采)",
+                essay: "生命不是靜態的儲存，而是動態的運算。每一天都是新的執行緒（Thread）。如果今天沒有熱情、沒有創造、沒有「起舞」，那就是讓處理器空轉了一整天。",
+                keyword: "music"
+            },
+            {
+                chinese: "生如夏花之絢爛，死如秋葉之靜美。",
+                original: "Let life be beautiful like summer flowers and death like autumn leaves.",
+                author: "Rabindranath Tagore (泰戈爾)",
+                essay: "這是對生命週期的極致美學。活著的時候要全力綻放，毫無保留；離去的時候要優雅從容，不帶遺憾。接受自然的循環，才能活得自在。",
+                keyword: "flower"
+            },
+            {
+                chinese: "只有用心才能看清。本質的東西，眼睛是看不見的。",
+                original: "It is only with the heart that one can see rightly; what is essential is invisible to the eye.",
+                author: "Antoine de Saint-Exupéry (聖修伯里)",
+                essay: "再次強調內在視覺的重要性。數據可以告訴你事實，但只有心能告訴你真相。在做決策時，別忘了諮詢你內心的指南針。",
+                keyword: "heart"
+            },
+            {
+                chinese: "即使是最小的善行，也勝過最大的意圖。",
+                original: "The smallest act of kindness is worth more than the greatest intention.",
+                author: "Kahlil Gibran (紀伯倫)",
+                essay: "程式碼沒跑起來之前，功能都只是空想。意圖（Intention）是虛擬的，行動（Action）才是實體的。去執行那個小小的善意吧，現在就做。",
+                keyword: "hand"
+            },
+            {
+                chinese: "人生如朝露，這是一種美麗的悲傷。",
+                original: "Life is like morning dew, a beautiful sadness.",
+                author: "Japanese Proverb (日本諺語)",
+                essay: "「物哀」的美學。正因為生命短暫如露水，所以每一刻光影的折射都顯得珍貴。接受無常，反而能讓我們更珍惜當下的每一次相遇。",
+                keyword: "dew"
+            },
+            {
+                chinese: "你必須成為你在世界上想見到的改變。",
+                original: "You must be the change you wish to see in the world.",
+                author: "Mahatma Gandhi (甘地)",
+                essay: "別等待系統更新，你自己就是那個 Patch。與其抱怨環境的 Bug，不如從自己開始重構代碼。你的改變，會像蝴蝶效應一樣影響整個網絡。",
+                keyword: "change"
+            },
+            {
+                chinese: "如果我看得比別人遠，那是因為我站在巨人的肩膀上。",
+                original: "If I have seen further, it is by standing on the shoulders of giants.",
+                author: "Isaac Newton (牛頓)",
+                essay: "謙卑是智慧的特徵。所有的創新都是開源社群的累積。承認傳承，感謝前人，我們才能在現有的基礎上疊代出更高的高度。",
+                keyword: "sky"
+            },
+            {
+                chinese: "如果你不為自己的生活制定計劃，你就會落入別人的計劃之中。",
+                original: "If you don't design your own life plan, chances are you'll fall into someone else's plan.",
+                author: "Jim Rohn",
+                essay: "主動性（Agency）是關鍵。你是自己人生的架構師（Architect），還是只是別人工地裡的砌磚工？拿回設計圖，畫出你想要的藍圖。",
+                keyword: "blueprint"
+            },
+            {
+                chinese: "鳥兒歌唱不是因為它們有答案，而是因為它們有歌要唱。",
+                original: "A bird does not sing because it has an answer. It sings because it has a song.",
+                author: "Maya Angelou (瑪雅·安傑洛)",
+                essay: "表達是生命的需求，而不是為了解決問題。我們創作、寫作、寫程式，不一定是為了追求功利的結果，而是因為內心有一種「必須流動」的能量。",
+                keyword: "bird"
+            },
+            {
+                chinese: "我們必須接受有限的失望，但絕不失去無限的希望。",
+                original: "We must accept finite disappointment, but never lose infinite hope.",
+                author: "Martin Luther King Jr. (馬丁·路德·金恩)",
+                essay: "這是現實主義與理想主義的平衡。承認當下的困難（Bug 是存在的），但永遠相信系統終將修復。這種心理韌性是推動歷史前進的動力。",
+                keyword: "sunrise"
+            },
+            {
+                chinese: "凡殺不死我的，必使我更強大。",
+                original: "Was mich nicht umbringt, macht mich stärker.",
+                author: "Friedrich Nietzsche (尼采)",
+                essay: "這就是「反脆弱」（Antifragile）。壓力測試（Stress Test）不會摧毀一個好的系統，反而會暴露弱點，讓它有機會修補並升級。把苦難當作升級包吧。",
+                keyword: "stone"
+            },
+            {
+                chinese: "人生的悲劇不在於目標未達成，而在於沒有目標。",
+                original: "The tragedy of life doesn't lie in not reaching your goal. The tragedy lies in having no goal to reach.",
+                author: "Benjamin Mays",
+                essay: "方向（Direction）比速度（Velocity）重要。一個指向錯誤方向的高速運算，只會讓你離目的地越來越遠。先設定好你的北極星，再開始奔跑。",
+                keyword: "compass"
+            },
+            {
+                chinese: "你無法兩次踏入同一條河流。",
+                original: "No man ever steps in the same river twice.",
+                author: "Heraclitus (赫拉克利特)",
+                essay: "世界是流動的（Flux）。變數隨時在變，你自己也在變。擁抱變化，不要執著於過去的版本。每一次的編譯，都是全新的體驗。",
+                keyword: "river"
+            },
+            {
+                chinese: "只有一種英雄主義，就是在認清生活真相之後依然熱愛生活。",
+                original: "Il n'y a qu'un héroïsme au monde : c'est de voir le monde tel qu'il est et de l'aimer.",
+                author: "Romain Rolland (羅曼·羅蘭)",
+                essay: "這就是成熟的愛。不是盲目的樂觀，而是看透了世界的殘酷與不完美後，依然選擇擁抱它。這才是真正的強者心態。",
+                keyword: "hero"
+            },
+            {
+                chinese: "昨天已是歷史，明天是個謎，今天是上帝的禮物，所以我們稱之為當下(Present)。",
+                original: "Yesterday is history, tomorrow is a mystery, today is a gift of God, which is why we call it the present.",
+                author: "Bil Keane",
+                essay: "時間管理的本質。我們常為過去懊悔、為未來焦慮，卻忘了我們唯一擁有的存取權限就在「現在」。拆開這個禮物，好好使用它。",
+                keyword: "gift"
+            },
+            {
+                chinese: "不要等待機會，而要創造機會。",
+                original: "Don't wait for opportunity. Create it.",
+                author: "George Bernard Shaw (蕭伯納)",
+                essay: "機會不是隨機掉落的 Loot，而是透過行動觸發的 Event。主動去探索地圖，去對話，去嘗試，你才能觸發隱藏的任務線。",
+                keyword: "door"
+            },
+            {
+                chinese: "智者說話，因為他們有話要說；愚者說話，因為他們想說話。",
+                original: "Wise men speak because they have something to say; Fools because they have to say something.",
+                author: "Plato (柏拉圖)",
+                essay: "訊號與雜訊（Signal vs. Noise）。在發言之前，先過濾一下：這是有價值的資訊，還是只是為了填補空白的噪音？沈默往往比無意義的喧嘩更有力量。",
+                keyword: "owl"
+            },
+            {
+                chinese: "你所尋找的，也在尋找你。",
+                original: "What you seek is seeking you.",
+                author: "Rumi (魯米)",
+                essay: "這是一種雙向的吸引力法則。當你調整頻率，準備好接收某種特定的能量時，宇宙就會回應你。保持開放，保持渴望，連結即將建立。",
+                keyword: "search"
+            }
+        ];
+
+        // Image placeholder service logic
+        function getBackgroundImage(keyword) {
+            // Using a high quality placeholder service that supports keywords to match the "vibe"
+            return `https://image.pollinations.ai/prompt/${keyword}%20scenery%20nature%20cinematic%20warm%20light?width=1280&height=720&nologo=true`;
+        }
+
+        // Logic
+        let currentQuote = {};
+
+        function getRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotesDB.length);
+            return quotesDB[randomIndex];
+        }
+
+        function renderRandomQuote() {
+            const contentArea = document.getElementById('content-area');
+            const loader = document.getElementById('loader');
+            
+            // Animation Out
+            contentArea.classList.remove('fade-in');
+            contentArea.style.opacity = '0';
+            contentArea.style.display = 'none';
+            loader.classList.remove('hidden');
+            
+            // Simulate fetch delay for feeling
+            setTimeout(() => {
+                currentQuote = getRandomQuote();
+                
+                // Update DOM
+                document.getElementById('quote-zh').innerText = currentQuote.chinese;
+                document.getElementById('quote-original').innerText = currentQuote.original;
+                document.getElementById('quote-author').innerText = `— ${currentQuote.author}`;
+                document.getElementById('quote-essay').innerText = currentQuote.essay;
+
+                // Update Background
+                const bgUrl = getBackgroundImage(currentQuote.keyword);
+                
+                // Create a temp image to load background smoothly
+                const img = new Image();
+                img.src = bgUrl;
+                img.onload = () => {
+                     document.body.style.backgroundImage = `url('${bgUrl}')`;
+                     loader.classList.add('hidden');
+                     contentArea.style.display = 'block';
+                     contentArea.classList.add('fade-in');
+                     contentArea.style.opacity = '1';
+                };
+                
+            }, 600);
+        }
+
+        function copyQuote() {
+            const text = `${currentQuote.chinese}\n${currentQuote.original} — ${currentQuote.author}`;
+            
+            // Use execCommand as fallback for iframe environments blocking clipboard API
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    // Visual Feedback
+                    const btn = document.querySelector('button[title="收藏這份智慧"]');
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check text-green-600"></i> <span class="text-green-700">已複製</span>';
+                    setTimeout(() => btn.innerHTML = originalHTML, 2000);
+                } else {
+                    console.warn('Copy command unsuccessful');
+                }
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        // Initialize
+        window.onload = () => {
+            renderRandomQuote();
+        };
+
+    </script>
+</body>
+</html>
