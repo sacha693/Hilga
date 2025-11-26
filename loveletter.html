@@ -1,0 +1,1100 @@
+import React, { useState, useEffect } from 'react';
+import { RefreshCw, Share2, Quote, Check } from 'lucide-react'; // Removed Feather
+
+// -----------------------------------------------------------------------------
+// 資料庫：100句經典台詞 (50句華語 + 50句西方)
+// -----------------------------------------------------------------------------
+const quotesData = [
+  // --- 華語經典 (1-50) ---
+  {
+    id: 1,
+    text: "曾經有一份真誠的愛情放在我面前，我沒有珍惜，等我失去的時候我才後悔莫及。如果上天能夠給我一個再來一次的機會，我會對那個女孩子說三個字：我愛你。",
+    source: "大話西遊",
+    year: "1995",
+    character: "至尊寶",
+    note: "這不是關於時間的長度，而是關於遺憾的深度。我們總是在失去後，才學會如何去愛。",
+    keywords: "desert sunset lonely sand movie scene"
+  },
+  {
+    id: 2,
+    text: "如果，我多一張船票，你會不會跟我一起走？",
+    source: "花樣年華",
+    year: "2000",
+    character: "周慕雲",
+    note: "愛情裡最卑微的試探。王家衛的鏡頭下，成年人的崩潰往往是無聲的，只在一張船票的距離。",
+    keywords: "vintage red qipao rain shadow hong kong 1960s"
+  },
+  {
+    id: 3,
+    text: "黎耀輝，不如我們從頭來過。",
+    source: "春光乍洩",
+    year: "1997",
+    character: "何寶榮",
+    note: "這世上最殺人的溫柔，也是最殘忍的詛咒。瀑布的水一直流，但有些關係裂了，就再也回不到從前。",
+    keywords: "iguazu waterfall road trip blue tone argentina"
+  },
+  {
+    id: 4,
+    text: "只有你想見我的時候，我們的相遇才有意義。",
+    source: "想見你",
+    year: "2019",
+    character: "李子維",
+    note: "雙向奔赴的愛才具有穿越時空的力量。莫比烏斯環的盡頭，是無盡的思念。",
+    keywords: "cassette tape school uniform sunlight white nostalgia"
+  },
+  {
+    id: 5,
+    text: "留下來，或者我跟你走。",
+    source: "海角七號",
+    year: "2008",
+    character: "阿嘉",
+    note: "這句告白之所以動人，是因為它沒有中間地帶。愛情的最終歸宿，不是你在哪裡，而是我們在一起。",
+    keywords: "taiwan beach sea summer sunset letter"
+  },
+  {
+    id: 6,
+    text: "我不知道該怎麼和生活中無法失去的人說再見，所以我沒有說再見就離開了。",
+    source: "藍莓之夜",
+    year: "2007",
+    character: "Elizabeth",
+    note: "王家衛唯一的英語片。逃避有時候不是為了遺忘，而是為了保留那份還未破碎的完整。",
+    keywords: "blueberry pie neon cafe night reflection glass"
+  },
+  {
+    id: 7,
+    text: "既然我也活下來了，我活著，就是為了翻案，為了你。",
+    source: "琅琊榜",
+    year: "2015",
+    character: "梅長蘇",
+    note: "最高級的愛，是將對一個人的深情，昇華為對共同信念的堅守。雪落無聲，情深義重。",
+    keywords: "snow ancient chinese winter fur costume drama"
+  },
+  {
+    id: 8,
+    text: "不知從何時開始，什麼東西上面都有個日期。秋刀魚會過期，肉罐頭會過期，連保鮮紙都會過期。",
+    source: "重慶森林",
+    year: "1994",
+    character: "何志武",
+    note: "我們渴望永恆，卻活在一個充滿期限的世界裡。愛情的保鮮期，其實取決於心的溫度。",
+    keywords: "pineapple can neon lights motion blur hong kong night"
+  },
+  {
+    id: 9,
+    text: "我要你知道，在這個世界上總有一個人是等著你的，不管在什麼時候，不管在什麼地方。",
+    source: "半生緣",
+    year: "1997",
+    character: "沈世鈞",
+    note: "張愛玲筆下的宿命感。這是一種近乎信仰的執著，支撐我們走過孤獨的漫漫長夜。",
+    keywords: "winter scarf glove snow retro shanghai"
+  },
+  {
+    id: 10,
+    text: "有些事情這輩子錯過了，就是一輩子。",
+    source: "臥虎藏龍",
+    year: "2000",
+    character: "李慕白",
+    note: "壓抑的東方情感美學。竹林聽風，我們往往為了道義與規矩，犧牲了最真實的渴望。",
+    keywords: "bamboo forest green fog sword martial arts"
+  },
+  {
+    id: 11,
+    text: "你好嗎？我很好。",
+    source: "情書",
+    year: "1995",
+    character: "渡邊博子",
+    note: "岩井俊二的極致純愛。最簡單的問候，是對著雪山吶喊，也是對自己內心的和解。",
+    keywords: "snow mountain winter white window japan movie"
+  },
+  {
+    id: 12,
+    text: "我願化身石橋，受五百年風吹，五百年日曬，五百年雨打，但求少女從橋上走過。",
+    source: "劍雨",
+    year: "2010",
+    character: "陸竹",
+    note: "愛是修行。為了那一瞬間的擦肩，有人願意付出永恆的寂寞。",
+    keywords: "stone bridge rain monk grey ancient"
+  },
+  {
+    id: 13,
+    text: "願得一心人，白頭不相離。",
+    source: "甄嬛傳",
+    year: "2011",
+    character: "甄嬛",
+    note: "在權謀算計的深宮紅牆中，這句樸素的詩詞，是所有悲劇與渴望的源頭。",
+    keywords: "forbidden city palace flower snow red wall winter"
+  },
+  {
+    id: 14,
+    text: "如果你給我的，和你給別人的是一樣的，那我就不要了。",
+    source: "三毛流浪記",
+    year: "N/A",
+    character: "三毛",
+    note: "愛的潔癖與獨佔性。愛如果不特別，如果不唯一，那它就失去了靈魂的重量。",
+    keywords: "sahara desert flower sand bohemian wanderlust"
+  },
+  {
+    id: 15,
+    text: "擁有就是失去的開始。",
+    source: "我可能不會愛你",
+    year: "2011",
+    character: "程又青",
+    note: "這是害怕受傷者的防衛機制。因為太過珍視，所以不敢觸碰，選擇以朋友的名義相守。",
+    keywords: "taipei city night skyline beer rooftop lonely"
+  },
+  {
+    id: 16,
+    text: "不管你記不記得我，我都會記得你。",
+    source: "你的名字",
+    year: "2016",
+    character: "立花瀧",
+    note: "新海誠的浪漫。記憶可以被抹去，但靈魂的羈絆會留下痕跡。黃昏之時，我們終將重逢。",
+    keywords: "anime sky comet stars hands twilight clouds"
+  },
+  {
+    id: 17,
+    text: "我最喜歡你看不慣我，又幹不掉我的樣子。",
+    source: "延禧攻略",
+    year: "2018",
+    character: "魏瓔珞",
+    note: "愛情裡的博弈與張力。有時候，旗鼓相當的對手，才是最長久的伴侶。",
+    keywords: "qing dynasty palace embroidery red gold luxury"
+  },
+  {
+    id: 18,
+    text: "傻丫頭，回去泡個熱水澡，睡個好覺，明天早上起來，滿街都是男人，個個都比豹哥好。",
+    source: "甜蜜蜜",
+    year: "1996",
+    character: "豹哥",
+    note: "有一種愛叫放手與成全。米老鼠刺青背後，藏著一顆最細膩溫柔的江湖心。",
+    keywords: "mickey mouse tattoo back ship harbor hong kong"
+  },
+  {
+    id: 19,
+    text: "若曦，你若不能來我的世界，我就去你的世界找你。",
+    source: "步步驚心",
+    year: "2011",
+    character: "四爺",
+    note: "跨越時空的執念。如果環境不允許我們相愛，我就改變那個環境，或者打破那個時空。",
+    keywords: "snow red plum flower tea ancient china winter"
+  },
+  {
+    id: 20,
+    text: "其實了解一個人並不代表什麼，人是會變的，今天他喜歡鳳梨，明天他可以喜歡別的。",
+    source: "重慶森林",
+    year: "1994",
+    character: "何志武",
+    note: "無常是愛的本質。在流動的城市裡，接受變化，或許才是維持關係的唯一途徑。",
+    keywords: "canned pineapple convenience store running night city"
+  },
+  {
+    id: 21,
+    text: "當你年輕時，以為什麼都有答案，可是老了的時候，你可能又覺得其實人生並沒有所謂的答案。",
+    source: "墮落天使",
+    year: "1995",
+    character: "殺手",
+    note: "廣角鏡頭下的迷離。年輕時追求黑白分明的結果，成熟後學會欣賞曖昧不明的過程。",
+    keywords: "neon lights motorcycle smoke bar wide angle lens"
+  },
+  {
+    id: 22,
+    text: "我甚至連他是誰都不知道，我只知道，他是我最愛的人。",
+    source: "霸王別姬",
+    year: "1993",
+    character: "程蝶衣",
+    note: "不瘋魔不成活。當愛超越了性別、身分甚至是現實，它便成為了藝術，也成為了悲劇。",
+    keywords: "peking opera makeup stage sword fire dramatic"
+  },
+  {
+    id: 23,
+    text: "你不是說過，有些東西是不用說出口的嗎？",
+    source: "色，戒",
+    year: "2007",
+    character: "王佳芝",
+    note: "沉默中的驚雷。在極度的壓抑與危險中，眼神與氣息的交會比語言更震耳欲聾。",
+    keywords: "diamond ring rain car window lipstick 1940s"
+  },
+  {
+    id: 24,
+    text: "原來世界上最遠的距離，不是生與死，而是我站在你面前，你卻不知道我愛你。",
+    source: "河東獅吼",
+    year: "2002",
+    character: "柳月娥",
+    note: "心靈的隔閡比物理的距離更難跨越。溝通與感知，是愛情最難的課題。",
+    keywords: "ancient chinese garden lion sad tree willow"
+  },
+  {
+    id: 25,
+    text: "我們回不去了。",
+    source: "半生緣",
+    year: "1997",
+    character: "顧曼楨",
+    note: "短短五個字，道盡了人世間所有的蒼涼。時間單向流動，有些路一旦走偏，就再無回頭可能。",
+    keywords: "grey winter street fog fence lonely woman"
+  },
+  {
+    id: 26,
+    text: "以前我以為，愛一個人就是希望他幸福。現在我才發現，如果不愛他，又怎麼會希望他幸福呢？",
+    source: "下一站，幸福",
+    year: "2009",
+    character: "梁慕橙",
+    note: "愛的悖論。我們無法將愛與佔有欲完全剝離，但可以選擇讓愛轉化為祝福。",
+    keywords: "piano train station music field country road"
+  },
+  {
+    id: 27,
+    text: "喜歡就是喜歡，哪有什麼為什麼。",
+    source: "那些年，我們一起追的女孩",
+    year: "2011",
+    character: "柯景騰",
+    note: "青春的純粹。成人的世界講究利弊分析，少年的愛只講究心跳的頻率與原子筆的墨水。",
+    keywords: "apple classroom rain blue shirt school uniform"
+  },
+  {
+    id: 28,
+    text: "人生如戲，戲如人生，唱戲瘋魔，做人何嘗不是？",
+    source: "梅蘭芳",
+    year: "2008",
+    character: "梅蘭芳",
+    note: "入戲太深是因為用情太深。在愛的舞台上，我們都是沒有劇本的演員。",
+    keywords: "theatre stage curtain spotlight mask opera"
+  },
+  {
+    id: 29,
+    text: "我不要你死，我要你活著，只有活著，才能贖罪。",
+    source: "花千骨",
+    year: "2015",
+    character: "白子畫",
+    note: "有時候，「活著」是對愛人最殘忍的要求，也是最深沉的牽掛。",
+    keywords: "fantasy flower petals blood sword ethereal"
+  },
+  {
+    id: 30,
+    text: "如果世界上曾經有那個人出現過，其他人都會變成將就。而我不願意將就。",
+    source: "何以笙簫默",
+    year: "2015",
+    character: "何以琛",
+    note: "愛情的潔癖。這是對品質的堅持，證明了真愛具有不可替代性。",
+    keywords: "lawyer suit modern city window library sunlight"
+  },
+  {
+    id: 31,
+    text: "無論生老病死，我都會一直陪著你，直到最後。",
+    source: "比悲傷更悲傷的故事",
+    year: "2018",
+    character: "K",
+    note: "承諾很重，因為它對抗的是時間與無常。陪伴，是最長情的告白。",
+    keywords: "rain sad couple grey hospital window"
+  },
+  {
+    id: 32,
+    text: "哪怕是飛蛾撲火，我也在所不惜。",
+    source: "仙劍奇俠傳",
+    year: "2005",
+    character: "林月如",
+    note: "犧牲式的愛。明知結局是毀滅，卻依然選擇燃燒自己，照亮對方。",
+    keywords: "fire purple sword night tower fantasy game"
+  },
+  {
+    id: 33,
+    text: "這世上，沒有無緣無故的愛，也沒有無緣無故的恨。",
+    source: "還珠格格",
+    year: "1998",
+    character: "夏雨荷",
+    note: "大明湖畔的因果。每一個當下的情感波動，都種植於過去的某個瞬間。",
+    keywords: "lotus lake rain paper umbrella ancient"
+  },
+  {
+    id: 34,
+    text: "你是我最甜蜜的負擔。",
+    source: "惡作劇之吻",
+    year: "2005",
+    character: "江直樹",
+    note: "愛是責任，也是重量。但正是這份重量，讓我們感到踏實與存在。",
+    keywords: "love letter school sweet couple taiwan drama"
+  },
+  {
+    id: 35,
+    text: "只要你過得比我好，我就放心了。",
+    source: "英雄本色",
+    year: "1986",
+    character: "宋子豪",
+    note: "男人的浪漫，放手的最高境界。將自我的需求降到最低，只求對方安好。",
+    keywords: "harbor sunset men brotherhood port action movie"
+  },
+  {
+    id: 36,
+    text: "忘記一個人只需要兩樣東西，時間和新歡。",
+    source: "前任攻略",
+    year: "2014",
+    character: "孟雲",
+    note: "雖然聽起來憤世嫉俗，但這是修復創傷的現實藥方。如果還痛，說明時間不夠長。",
+    keywords: "cocktail bar night glass party city lights"
+  },
+  {
+    id: 37,
+    text: "因為愛過，所以慈悲；因為懂得，所以寬容。",
+    source: "傾城之戀",
+    year: "1984",
+    character: "范柳原",
+    note: "張愛玲的通透。愛的終極形態是理解。當你看透了一個人的脆弱，便再也無法對他生氣。",
+    keywords: "ruins wall war dust history vintage hong kong"
+  },
+  {
+    id: 38,
+    text: "我不怕等，我只怕等到最後，你已經忘了我。",
+    source: "致我們終將逝去的青春",
+    year: "2013",
+    character: "鄭微",
+    note: "等待是時間的賭博。籌碼是青春，而贏家往往是記憶力最好的人。",
+    keywords: "university grass bicycle sun stadium youth"
+  },
+  {
+    id: 39,
+    text: "你是我的心，你是我的肝，你是我生命的四分之三。",
+    source: "命中注定我愛你",
+    year: "2008",
+    character: "紀存希",
+    note: "雖然有些誇張與土味，但愛到深處，對方確實成為了構成生命的必要元素。",
+    keywords: "sticky note office ring postit romance"
+  },
+  {
+    id: 40,
+    text: "每個人都只能陪你走一段路，遲早是要分開的。",
+    source: "山河故人",
+    year: "2015",
+    character: "沈濤",
+    note: "賈樟柯的時代感。接受離別是人生的必修課。感謝那段同行的時光，好過糾結於終點的殊途。",
+    keywords: "yellow river snow mountain cold fireworks melancholic"
+  },
+  {
+    id: 41,
+    text: "我賭你，這輩子都不會愛上別人。",
+    source: "千山暮雪",
+    year: "2011",
+    character: "莫紹謙",
+    note: "這是一種病態的自信與絕望。用恨意包裹的愛，往往比糖果更難以消化。",
+    keywords: "glasses suit office cold mirror reflection"
+  },
+  {
+    id: 42,
+    text: "如果你累了，就回頭看看，我一直都在。",
+    source: "微微一笑很傾城",
+    year: "2016",
+    character: "肖奈",
+    note: "安全感的極致。不需要時刻黏在一起，但只要回頭，那個避風港永遠為你敞開。",
+    keywords: "computer game fantasy willow bridge cyber romance"
+  },
+  {
+    id: 43,
+    text: "世間安得雙全法，不負如來不負卿。",
+    source: "不負如來不負卿",
+    year: "2017",
+    character: "羅什",
+    note: "信仰與愛情的拉扯。在責任與本能之間，人類永遠在尋找那個不存在的平衡點。",
+    keywords: "temple monk snow buddha mountains spiritual"
+  },
+  {
+    id: 44,
+    text: "所謂的緣分，就是你想吃的時候，廚房剛好有。",
+    source: "飲食男女",
+    year: "1994",
+    character: "朱老先生",
+    note: "李安的煙火氣。愛是生活。去掉了風花雪月，愛就藏在一粥一飯的巧合與溫暖裡。",
+    keywords: "kitchen cooking steam family food feast"
+  },
+  {
+    id: 45,
+    text: "無論過程再怎麼艱辛，只要結果是和你在一起，我就願意。",
+    source: "我們結婚吧",
+    year: "2013",
+    character: "果然",
+    note: "結果導向的浪漫。因為終點是你，所以沿途的荊棘都變成了鋪墊花路的裝飾。",
+    keywords: "wedding ring flowers white veil marriage"
+  },
+  {
+    id: 46,
+    text: "我不想做你生命中的插曲，我想做你生命中完美的結局。",
+    source: "敗犬女王",
+    year: "2009",
+    character: "盧卡斯",
+    note: "這是一種宣告。拒絕成為過客，立志成為歸人，需要極大的勇氣與決心。",
+    keywords: "city motorbike speed night helmet road"
+  },
+  {
+    id: 47,
+    text: "愛一個人，就是賦予了他傷害你的權力。",
+    source: "失戀33天",
+    year: "2011",
+    character: "黃小仙",
+    note: "這是愛的代價。卸下盔甲擁抱對方時，我們便把最柔軟的軟肋暴露無遺。",
+    keywords: "pen diary tear rain window writing"
+  },
+  {
+    id: 48,
+    text: "你站在橋上看風景，看風景的人在樓上看你。",
+    source: "後會無期",
+    year: "2014",
+    character: "馬浩漢",
+    note: "相對論般的愛情視角。我們都是別人眼中的風景，也都在尋找屬於自己的畫框。",
+    keywords: "road trip desert car dust landscape"
+  },
+  {
+    id: 49,
+    text: "我一直以為是我自己贏了，直到有一天我看著鏡子，才知道自己輸了。",
+    source: "東邪西毒",
+    year: "1994",
+    character: "歐陽鋒",
+    note: "贏了天下輸了她。大漠孤煙，所有的成就感，在無人分享的寂寞面前，都顯得蒼白無力。",
+    keywords: "desert wine shadow sand cage wong kar wai"
+  },
+  {
+    id: 50,
+    text: "如果有一天我忍不住問你，你一定要騙我。",
+    source: "東邪西毒",
+    year: "1994",
+    character: "慕容燕",
+    note: "自欺欺人的悲哀。有時候，謊言是維持尊嚴與希望的最後一根稻草。",
+    keywords: "birdcage shadow light window reflection sorrow"
+  },
+  // --- 西方經典 (51-100) ---
+  {
+    id: 51,
+    text: "Life was like a box of chocolates. You never know what you're gonna get. (人生就像一盒巧克力，你永遠不知道下一顆會是什麼味道。)",
+    source: "Forrest Gump (阿甘正傳)",
+    year: "1994",
+    character: "Forrest",
+    note: "純真者的智慧。愛與命運一樣，充滿了隨機的驚喜與苦澀，但我們依然要勇敢品嚐。",
+    keywords: "park bench feather running road suitcase"
+  },
+  {
+    id: 52,
+    text: "To make each day count. (讓每一天都值得。)",
+    source: "Titanic (鐵達尼號)",
+    year: "1997",
+    character: "Jack",
+    note: "在沉沒前的狂歡。正因為生命有限，愛的熱度才如此耀眼。活在當下，是愛的最高敬意。",
+    keywords: "titanic ship ocean sunset bow embrace"
+  },
+  {
+    id: 53,
+    text: "I'm also just a girl, standing in front of a boy, asking him to love her. (我也只是一個女孩，站在一個男孩面前，請求他愛她。)",
+    source: "Notting Hill (新娘百分百)",
+    year: "1999",
+    character: "Anna Scott",
+    note: "卸下巨星光環後的脆弱。愛是平等的，在愛面前，我們都只是渴望被擁抱的平凡靈魂。",
+    keywords: "bookstore london street blue door romance"
+  },
+  {
+    id: 54,
+    text: "Frankly, my dear, I don't give a damn. (坦白說，親愛的，我一點也不在乎。)",
+    source: "Gone with the Wind (亂世佳人)",
+    year: "1939",
+    character: "Rhett Butler",
+    note: "影史上最著名的分手宣言。當愛被耗盡，剩下的只有冷漠。這是對糾纏不清的關係最痛快的了斷。",
+    keywords: "fire silhouette sunset civil war dress mist"
+  },
+  {
+    id: 55,
+    text: "Here's looking at you, kid. (孩子，這杯酒敬你的眼眸。)",
+    source: "Casablanca (北非諜影)",
+    year: "1942",
+    character: "Rick",
+    note: "亂世中的深情道別。有一種愛叫成全，為了大義與對方的安全，將深情化作一杯苦酒嚥下。",
+    keywords: "fog airport hat film noir black and white"
+  },
+  {
+    id: 56,
+    text: "You complete me. (你完整了我。)",
+    source: "Jerry Maguire (征服情海)",
+    year: "1996",
+    character: "Jerry",
+    note: "靈魂伴侶的定義。我們都是半圓，終其一生在尋找那個能讓自己畫成圓的人。",
+    keywords: "living room couch hug warm light couple"
+  },
+  {
+    id: 57,
+    text: "Some of us get dipped in flat, some in satin, some in gloss... But every once in a while you find someone who's iridescent. (斯人若彩虹，遇上方知有。)",
+    source: "Flipped (怦然心動)",
+    year: "2010",
+    character: "Chet Garrett",
+    note: "怦然心動的瞬間。在平庸的世界裡，那個人閃閃發光，讓其他一切都成了背景。",
+    keywords: "sycamore tree sunset childhood grass golden hour"
+  },
+  {
+    id: 58,
+    text: "I wish I knew how to quit you. (我希望我知道該如何戒掉你。)",
+    source: "Brokeback Mountain (斷背山)",
+    year: "2005",
+    character: "Jack Twist",
+    note: "愛如毒癮。李安鏡頭下的壓抑與渴望，明知不可為而為之，是痛徹心扉的無奈。",
+    keywords: "mountain nature cowboy tent river wilderness"
+  },
+  {
+    id: 59,
+    text: "It's not what you see that stops you, it's what you don't see. (阻止你的不是你所看見的，而是你所沒看見的。)",
+    source: "The Legend of 1900 (海上鋼琴師)",
+    year: "1998",
+    character: "1900",
+    note: "對無限世界的恐懼。有些人選擇在有限的琴鍵上創造無限，也不願踏入無盡的未知。",
+    keywords: "grand piano ocean ship window storm steam"
+  },
+  {
+    id: 60,
+    text: "I like to feel his eyes on me when I look away. (我喜歡我望向別處時，他望向我的目光。)",
+    source: "Before Sunrise (愛在黎明破曉時)",
+    year: "1995",
+    character: "Celine",
+    note: "曖昧的極致。偷看是愛的證明，而被偷看時的竊喜，是愛情最甜美的瞬間。",
+    keywords: "train vienna street night walking couple talking"
+  },
+  {
+    id: 61,
+    text: "Whatever you end up doing, love it. (無論你最終做什麼，要熱愛它。)",
+    source: "Cinema Paradiso (新天堂樂園)",
+    year: "1988",
+    character: "Alfredo",
+    note: "不僅是對事業的期許，也是對生命的態度。唯有熱愛，能抵禦歲月的漫長與無聊。",
+    keywords: "film reel cinema projector vintage movie theater"
+  },
+  {
+    id: 62,
+    text: "You make me want to be a better man. (你讓我想成為一個更好的人。)",
+    source: "As Good as It Gets (愛在心裡口難開)",
+    year: "1997",
+    character: "Melvin",
+    note: "愛的正面力量。最好的愛情不是互相消耗，而是因為對方的存在，我們願意修正自己的瑕疵。",
+    keywords: "restaurant dog city street new york"
+  },
+  {
+    id: 63,
+    text: "We'll always have Paris. (我們永遠擁有巴黎。)",
+    source: "Casablanca (北非諜影)",
+    year: "1942",
+    character: "Rick",
+    note: "回憶是奪不走的財富。即便現實無法相守，但那段美好的時光已永恆鐫刻在生命裡。",
+    keywords: "eiffel tower rain piano noir memory"
+  },
+  {
+    id: 64,
+    text: "I will always find you. (我會永遠找到你。)",
+    source: "Once Upon a Time (童話小鎮/白雪公主)",
+    year: "2011",
+    character: "Prince Charming",
+    note: "這句雖源自美劇，但已成為承諾的經典。無論時空如何變換，愛是指引歸途的燈塔。",
+    keywords: "enchanted forest castle sword magic fairy tale"
+  },
+  {
+    id: 65,
+    text: "After all, tomorrow is another day. (無論如何，明天又是新的一天。)",
+    source: "Gone with the Wind (亂世佳人)",
+    year: "1939",
+    character: "Scarlett",
+    note: "絕境中的希望。在愛與失去的廢墟上重生的勇氣，是女性力量的極致展現。",
+    keywords: "silhouette tree sunrise red sky plantation"
+  },
+  {
+    id: 66,
+    text: "Love means never having to say you're sorry. (愛意味著永遠不必說抱歉。)",
+    source: "Love Story (愛的故事)",
+    year: "1970",
+    character: "Jennifer",
+    note: "雖然這觀點有爭議，但它代表了那個時代對無條件包容的嚮往。真愛是無需解釋的默契。",
+    keywords: "snow campus scarf winter college romance"
+  },
+  {
+    id: 67,
+    text: "Three words. Eight letters. Say it, and I'm yours. (三個字，八個字母。說出來，我就是你的。)",
+    source: "Gossip Girl (花邊教主)",
+    year: "2007",
+    character: "Blair Waldorf",
+    note: "愛情裡的博弈與傲嬌。我們都在等那句「I Love You」，那是通往對方世界的唯一鑰匙。",
+    keywords: "limo city fashion party luxury new york"
+  },
+  {
+    id: 68,
+    text: "People call those imperfections, but no, that's the good stuff. (人們稱之為不完美，其實不然，那才是好東西。)",
+    source: "Good Will Hunting (心靈捕手)",
+    year: "1997",
+    character: "Sean",
+    note: "接納不完美。愛的本質是看見並擁抱對方的瑕疵，正是這些小怪癖讓對方獨一無二。",
+    keywords: "park bench autumn leaves lake reflection"
+  },
+  {
+    id: 69,
+    text: "The greatest thing you'll ever learn is just to love and be loved in return. (你此生學到最偉大的事，就是去愛並被愛。)",
+    source: "Moulin Rouge! (紅磨坊)",
+    year: "2001",
+    character: "Christian",
+    note: "華麗歌舞下的真理。在金錢與名利之外，愛與被愛的回應，是生命唯一的救贖。",
+    keywords: "red curtain stage windmill cabaret musical"
+  },
+  {
+    id: 70,
+    text: "Here's to the ones who dream, foolish as they may seem. (敬那些做夢的人，儘管他們看起來像個傻瓜。)",
+    source: "La La Land (樂來樂愛你)",
+    year: "2016",
+    character: "Mia",
+    note: "夢想與愛情的取捨。紫色的夜空下，獻給所有在現實與理想中掙扎的靈魂。",
+    keywords: "purple night sky street lamp dancing pier"
+  },
+  {
+    id: 71,
+    text: "In case I don't see you, good afternoon, good evening, and good night. (如果我不曾再見到你，祝你早安、午安、晚安。)",
+    source: "The Truman Show (楚門的世界)",
+    year: "1998",
+    character: "Truman",
+    note: "走出虛假的勇氣。這句優雅的告別，是對自由世界的嚮往，也是對舊生活的決裂。",
+    keywords: "stairs sky door blue water studio set"
+  },
+  {
+    id: 72,
+    text: "Carpe diem. Seize the day, boys. Make your lives extraordinary. (及時行樂，孩子們。讓你們的生命超凡脫俗。)",
+    source: "Dead Poets Society (春風化雨)",
+    year: "1989",
+    character: "John Keating",
+    note: "生命的熱情。不要讓自己在沉默的絕望中老去，抓緊當下，活出詩意。",
+    keywords: "classroom books candle uniform poetry autumn"
+  },
+  {
+    id: 73,
+    text: "You have bewitched me, body and soul. (你對我下了魔咒，無論是身體還是靈魂。)",
+    source: "Pride and Prejudice (傲慢與偏見)",
+    year: "2005",
+    character: "Mr. Darcy",
+    note: "傲慢的崩塌。當理智完全臣服於情感，這是最深情的投降。",
+    keywords: "english manor rain field mist sunrise classical"
+  },
+  {
+    id: 74,
+    text: "Hope is a good thing, maybe the best of things, and no good thing ever dies. (希望是美好的，也許是世間最美好的事物，而美好的事物永不消逝。)",
+    source: "The Shawshank Redemption (刺激1995)",
+    year: "1994",
+    character: "Andy",
+    note: "絕望中的光芒。在體制化的牢籠裡，唯有心中不滅的希望，能帶我們穿越下水道，擁抱自由的雨水。",
+    keywords: "rain prison wall oak tree rock hammer freedom"
+  },
+  {
+    id: 75,
+    text: "If you're a bird, I'm a bird. (如果你是鳥，那我也是鳥。)",
+    source: "The Notebook (手札情緣)",
+    year: "2004",
+    character: "Noah",
+    note: "相隨的誓言。這不是邏輯的判斷，而是生死相隨的本能。",
+    keywords: "lake boat rain swan summer romance"
+  },
+  {
+    id: 76,
+    text: "We accept the love we think we deserve. (我們只接受我們認為自己配得上的愛。)",
+    source: "The Perks of Being a Wallflower (壁花男孩)",
+    year: "2012",
+    character: "Mr. Anderson",
+    note: "自我價值的覺醒。如果不自愛，就會不斷陷入被傷害的循環。你值得更好的。",
+    keywords: "tunnel car night wind city lights youth"
+  },
+  {
+    id: 77,
+    text: "Look at the stars. Look how they shine for you. (抬頭看看星星，看它們如何為你閃耀。)",
+    source: "Coldplay - Yellow (引用於多部影視)",
+    year: "2000",
+    character: "Lyrics",
+    note: "宇宙級的浪漫。在愛人眼中，你就是整個星系的中心。",
+    keywords: "stars night sky beach yellow glow"
+  },
+  {
+    id: 78,
+    text: "It was a million tiny little things that, when you added them all up, they meant we were supposed to be together. (那是無數件微小的事，加在一起，就意味著我們註定要在一起。)",
+    source: "Sleepless in Seattle (西雅圖夜未眠)",
+    year: "1993",
+    character: "Sam",
+    note: "緣分的積累。愛情不是一個巨大的驚嘆號，而是無數個溫暖的逗號組成的篇章。",
+    keywords: "seattle city night radio empire state building"
+  },
+  {
+    id: 79,
+    text: "I promise I'll come back for you. I promise I'll never leave you. (我發誓我會回來找你，我發誓我永遠不會離開你。)",
+    source: "The English Patient (英倫情人)",
+    year: "1996",
+    character: "Almasy",
+    note: "戰火中的絕戀。在沙漠與洞穴中，承諾顯得如此脆弱又如此堅強。",
+    keywords: "desert biplane cave sand map vintage"
+  },
+  {
+    id: 80,
+    text: "You are the only exception. (你是唯一的例外。)",
+    source: "He's Just Not That Into You (提喻)",
+    year: "2009",
+    character: "Concept",
+    note: "規則的破壞者。我們建立無數原則來保護自己，直到那個人出現，所有原則都成了廢紙。",
+    keywords: "bar drink smartphone city dating"
+  },
+  {
+    id: 81,
+    text: "I would rather have had one breath of her hair, one kiss from her mouth, one touch of her hand, than eternity without it. (我寧願聞一次她的髮香，親一次她的嘴唇，摸一次她的手，也不願沒有她而長生不死。)",
+    source: "City of Angels (我的愛人，你的死神)",
+    year: "1998",
+    character: "Seth",
+    note: "天使墜入凡間。為了愛的感官體驗，寧願放棄永恆的虛無。",
+    keywords: "library angel wings sunrise ocean beach"
+  },
+  {
+    id: 82,
+    text: "Keep your friends close, but your enemies closer. (親近你的朋友，但要更親近你的敵人。)",
+    source: "The Godfather (教父)",
+    year: "1972",
+    character: "Michael Corleone",
+    note: "男人的處世哲學。在冷酷的黑幫世界裡，智慧與冷靜比子彈更有力量。",
+    keywords: "dark room tuxedo cat office shadows mafia"
+  },
+  {
+    id: 83,
+    text: "Why do we fall, sir? So that we can learn to pick ourselves up. (先生，我們為什麼會跌倒？這樣我們才能學會站起來。)",
+    source: "Batman Begins (蝙蝠俠：開戰時刻)",
+    year: "2005",
+    character: "Alfred",
+    note: "成長的痛楚。失敗不是終點，而是英雄煉成的必經之路。",
+    keywords: "bat cave dark well manor gotham city"
+  },
+  {
+    id: 84,
+    text: "May the Force be with you. (願原力與你同在。)",
+    source: "Star Wars (星際大戰)",
+    year: "1977",
+    character: "Han Solo / Others",
+    note: "影史最經典的祝福。這不僅是好運，更是一種信念，相信宇宙中有某種力量在守護正義。",
+    keywords: "outer space stars lightsaber desert binary sunset"
+  },
+  {
+    id: 85,
+    text: "There's no place like home. (金窩銀窩，不如自己的狗窩。)",
+    source: "The Wizard of Oz (綠野仙蹤)",
+    year: "1939",
+    character: "Dorothy",
+    note: "歸途的渴望。走遍光怪陸離的世界，才發現最溫暖的角落，始終是家。",
+    keywords: "ruby slippers yellow brick road farm emerald city"
+  },
+  {
+    id: 86,
+    text: "O Captain! My Captain! (哦，船長！我的船長！)",
+    source: "Dead Poets Society (春風化雨)",
+    year: "1989",
+    character: "Todd Anderson",
+    note: "對導師的致敬。站在桌上的一刻，是思想的覺醒，也是對權威最優雅的反抗。",
+    keywords: "classroom desk standing uniform school"
+  },
+  {
+    id: 87,
+    text: "I'm the king of the world! (我是世界之王！)",
+    source: "Titanic (鐵達尼號)",
+    year: "1997",
+    character: "Jack",
+    note: "青春的狂嘯。在巨大的鐵船頭，一無所有的少年擁有了整個海洋與風。",
+    keywords: "ship bow ocean blue sky open arms"
+  },
+  {
+    id: 88,
+    text: "Show me the money! (讓我看到錢！)",
+    source: "Jerry Maguire (征服情海)",
+    year: "1996",
+    character: "Rod Tidwell",
+    note: "現實的吶喊。雖然充滿銅臭味，但這份坦率與激情，也是生存的一種力量。",
+    keywords: "telephone office glasses shouting sports agent"
+  },
+  {
+    id: 89,
+    text: "You talking to me? (你在跟我說話嗎？)",
+    source: "Taxi Driver (計程車司機)",
+    year: "1976",
+    character: "Travis",
+    note: "孤獨的鏡像。對著鏡子自言自語，是都市邊緣人最深沉的寂寞與瘋狂。",
+    keywords: "mirror taxi cab night rain gun mohawk"
+  },
+  {
+    id: 90,
+    text: "I see dead people. (我看得見死人。)",
+    source: "The Sixth Sense (靈異第六感)",
+    year: "1999",
+    character: "Cole",
+    note: "恐懼的告白。當孩子說出這句話，顫抖的不僅是聲音，還有觀眾對未知世界的敬畏。",
+    keywords: "bed covers shadow fear boy ghost"
+  },
+  {
+    id: 91,
+    text: "Houston, we have a problem. (休士頓，我們有麻煩了。)",
+    source: "Apollo 13 (阿波羅13號)",
+    year: "1995",
+    character: "Jim Lovell",
+    note: "極致的冷靜。在太空中面對死亡，這句輕描淡寫的報告，展現了人類理性的光輝。",
+    keywords: "spacecraft moon rocket mission control zero gravity"
+  },
+  {
+    id: 92,
+    text: "There is no spoon. (根本沒有湯匙。)",
+    source: "The Matrix (駭客任務)",
+    year: "1999",
+    character: "Spoon Boy",
+    note: "唯心論的覺醒。改變的不是世界，而是我們看待世界的方式。現實只是大腦的投影。",
+    keywords: "digital rain green code spoon sunglasses cyber"
+  },
+  {
+    id: 93,
+    text: "Hasta la vista, baby. (後會有期，寶貝。)",
+    source: "Terminator 2 (魔鬼終結者2)",
+    year: "1991",
+    character: "The Terminator",
+    note: "機器的幽默。當冷血殺手學會這句俏皮話，人性便在鋼鐵軀殼中萌芽。",
+    keywords: "sunglasses shotgun motorcycle leather jacket fire"
+  },
+  {
+    id: 94,
+    text: "My precious. (我的寶貝。)",
+    source: "The Lord of the Rings (魔戒)",
+    year: "2002",
+    character: "Gollum",
+    note: "慾望的深淵。對物的過度執著，最終會吞噬靈魂，讓人變得面目全非。",
+    keywords: "golden ring cave dark water reflection goblin"
+  },
+  {
+    id: 95,
+    text: "Why so serious? (幹嘛這麼嚴肅？)",
+    source: "The Dark Knight (黑暗騎士)",
+    year: "2008",
+    character: "The Joker",
+    note: "混沌的哲學。小丑不僅是反派，他是秩序的破壞者，用混亂嘲笑世人的偽善。",
+    keywords: "joker makeup clown face purple suit playing card"
+  },
+  {
+    id: 96,
+    text: "Love is the one thing that transcends time and space. (愛是唯一可以超越時間與空間的事物。)",
+    source: "Interstellar (星際效應)",
+    year: "2014",
+    character: "Brand",
+    note: "科學與情感的交會。在五維空間裡，引力可以傳遞訊息，而愛指引了方向。",
+    keywords: "space wormhole cornfield bookshelf watch tesseract"
+  },
+  {
+    id: 97,
+    text: "I am Groot. (我是格魯特。)",
+    source: "Guardians of the Galaxy (星際異攻隊)",
+    year: "2014",
+    character: "Groot",
+    note: "最簡單的語言，最豐富的情感。這三個字包含了「我愛你」、「謝謝」與「我們是家人」。",
+    keywords: "tree creature space stars green galaxy"
+  },
+  {
+    id: 98,
+    text: "Manners maketh man. (禮儀成就不凡之人。)",
+    source: "Kingsman (金牌特務)",
+    year: "2014",
+    character: "Harry Hart",
+    note: "紳士的暴力美學。優雅不是軟弱，穿著訂製西裝打架，是對混亂世界的一種秩序修正。",
+    keywords: "bespoke suit umbrella glasses pub london gentleman"
+  },
+  {
+    id: 99,
+    text: "Winter is coming. (凜冬將至。)",
+    source: "Game of Thrones (權力遊戲)",
+    year: "2011",
+    character: "Ned Stark",
+    note: "警世的預言。在安逸的夏日，永遠不要忘記寒冬就在轉角。時刻準備，方能生存。",
+    keywords: "snow wolf sword iron throne winterfell"
+  },
+  {
+    id: 100,
+    text: "To infinity and beyond! (飛向宇宙，浩瀚無垠！)",
+    source: "Toy Story (玩具總動員)",
+    year: "1995",
+    character: "Buzz Lightyear",
+    note: "玩具的夢想。即使知道自己只是玩具，也要擁有探索宇宙的豪情壯志。",
+    keywords: "toy astronaut space cloud wallpaper kid room"
+  }
+];
+
+const App = () => {
+  const [currentQuote, setCurrentQuote] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [bgImage, setBgImage] = useState('');
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  // 計算每日一句
+  const getDailyQuoteIndex = () => {
+    const today = new Date();
+    const startOfYear = new Date(today.getFullYear(), 0, 0);
+    const diff = today - startOfYear;
+    const oneDay = 1000 * 60 * 60 * 24;
+    const dayOfYear = Math.floor(diff / oneDay);
+    return dayOfYear % quotesData.length;
+  };
+
+  const updateQuote = (index) => {
+    const quote = quotesData[index];
+    setCurrentQuote(quote);
+    
+    // 使用 Pollinations.ai 生成符合意境的圖片
+    // 參數說明: 
+    // - prompt: 關鍵字描述
+    // - width/height: 圖片尺寸
+    // - seed: 隨機種子 (這裡使用時間戳記+ID確保每次不同但有關聯，或純時間戳)
+    // - nologo: 去除浮水印
+    const timestamp = new Date().getTime();
+    const encodedKeywords = encodeURIComponent(`cinematic shot of ${quote.keywords}, moody lighting, high quality, 4k`);
+    const newImageUrl = `https://image.pollinations.ai/prompt/${encodedKeywords}?width=450&height=800&nologo=true&seed=${timestamp}`;
+    
+    setBgImage(newImageUrl);
+  };
+
+  // 隨機選取
+  const getRandomQuote = () => {
+    setIsAnimating(true);
+    setCopySuccess(false);
+    setTimeout(() => {
+      const randomIndex = Math.floor(Math.random() * quotesData.length);
+      updateQuote(randomIndex);
+      setIsAnimating(false);
+    }, 600);
+  };
+
+  // 初始載入
+  useEffect(() => {
+    const index = getDailyQuoteIndex();
+    updateQuote(index);
+  }, []);
+
+  // 複製功能
+  const handleCopy = () => {
+    if (currentQuote) {
+      const text = `「${currentQuote.text}」\n\n${currentQuote.note}\n\n—— ${currentQuote.character}《${currentQuote.source}》(${currentQuote.year})\n@瑞光沙舟`;
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-9999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            setCopySuccess(true);
+            setTimeout(() => setCopySuccess(false), 2000);
+        }
+      } catch (err) {
+        console.error('無法複製', err);
+      }
+      document.body.removeChild(textArea);
+    }
+  };
+
+  if (!currentQuote) return (
+    <div className="flex h-screen items-center justify-center bg-[#f7f5f0] text-[#8c8680] font-serif tracking-widest">
+      <span className="animate-pulse">Loading Cinema...</span>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#f2f0eb] flex flex-col items-center justify-center p-4 selection:bg-[#d6cbb8] selection:text-[#5a5248]">
+      
+      {/* 主要容器：美麗箋 (Stationery) - Adjusted size for better readability on social media */}
+      <div className="w-full max-w-[640px] aspect-square bg-[#fdfbf7] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] rounded-sm overflow-hidden flex relative ring-1 ring-[#e8e4da]">
+        
+        {/* 紙張紋理層 */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+             style={{backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`}}>
+        </div>
+
+        {/* 內部排版容器 - Adjusted layout ratio to 3.5:6.5 for more text space */}
+        <div className="flex w-full h-full relative z-10">
+            
+            {/* 左側：意境圖像區 (Visual) - Reduced width to 35% */}
+            <div className={`w-[35%] relative overflow-hidden border-r border-[#e8e4da] transition-opacity duration-700 ${isAnimating ? 'opacity-80' : 'opacity-100'}`}>
+                {/* 圖片濾鏡：模擬膠卷/復古感 */}
+                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-[2000ms] hover:scale-105"
+                     style={{
+                         backgroundImage: `url('${bgImage}')`,
+                         backgroundColor: '#e5e5e5', 
+                         filter: 'grayscale(30%) sepia(20%) contrast(90%) brightness(105%)'
+                     }}
+                ></div>
+                {/* 圖片上的裝飾文字 */}
+                <div className="absolute bottom-6 left-6 text-white/80 writing-vertical-rl font-serif tracking-widest text-xs opacity-70 hidden md:block" style={{writingMode: 'vertical-rl'}}>
+                    {currentQuote.source} ‧ {currentQuote.year}
+                </div>
+            </div>
+
+            {/* 右側：文字內容區 (Content) - Increased width to 65% */}
+            <div className="w-[65%] p-5 md:p-6 flex flex-col relative">
+                
+                {/* 浮水印式引號 */}
+                <div className="absolute top-4 left-4 opacity-10 text-[#8c8680] pointer-events-none">
+                    <Quote size={80} className="transform rotate-180" />
+                </div>
+
+                {/* 核心台詞區 - Significantly increased font size and color contrast */}
+                <div className={`flex-grow flex flex-col justify-center transition-all duration-500 ${isAnimating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'} relative z-10`}>
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif text-[#1c1917] leading-snug mb-5 tracking-wide text-justify font-bold">
+                        {currentQuote.text}
+                    </h1>
+                    
+                    {/* 哲學家/影評人短評 - Increased font size and color contrast */}
+                    <div className="relative pl-5 mb-6">
+                        <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-[#d6cbb8]"></div>
+                        <p className="text-[#44403c] font-serif text-base md:text-lg leading-relaxed italic font-medium">
+                            {currentQuote.note}
+                        </p>
+                    </div>
+
+                    {/* 角色與出處 - Enhanced readability */}
+                    <div className="text-right mt-1">
+                        <p className="text-[#292524] font-serif font-bold text-base tracking-widest mb-1">
+                            {currentQuote.character}
+                        </p>
+                        <p className="text-[#57534e] text-xs md:text-sm tracking-wider uppercase">
+                            《 {currentQuote.source} 》 ({currentQuote.year})
+                        </p>
+                    </div>
+                </div>
+
+                {/* 底部版權 - Enhanced readability */}
+                <div className="mt-auto pt-4 flex justify-center items-end opacity-60">
+                    <div className="flex flex-col items-center gap-1">
+                        <div className="h-px w-24 bg-[#d6cbb8] mb-2"></div>
+                        <p className="text-[10px] md:text-xs text-[#78716c] font-serif tracking-[0.2em]">
+                            © 2025 瑞光沙舟心流所
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+      </div>
+
+      {/* 頁框外操作區 */}
+      <div className="mt-8 flex gap-6 items-center opacity-80 hover:opacity-100 transition-opacity">
+        <button 
+            onClick={handleCopy}
+            className="flex flex-col items-center gap-2 group text-[#8c8680] hover:text-[#5a5248] transition-colors"
+            title="收藏這份感動"
+        >
+            <div className="p-3 rounded-full border border-[#d6cbb8] bg-[#fdfbf7] shadow-sm group-hover:shadow-md transition-all group-hover:-translate-y-1">
+                {copySuccess ? <Check size={20} className="text-green-600" /> : <Share2 size={20} />}
+            </div>
+            <span className="text-xs font-serif tracking-widest">{copySuccess ? '已收藏' : '分享'}</span>
+        </button>
+
+        <div className="h-8 w-px bg-[#d6cbb8]"></div>
+
+        <button 
+            onClick={getRandomQuote}
+            className="flex flex-col items-center gap-2 group text-[#8c8680] hover:text-[#5a5248] transition-colors"
+            title="遇見下一段故事"
+        >
+            <div className="p-3 rounded-full border border-[#d6cbb8] bg-[#fdfbf7] shadow-sm group-hover:shadow-md transition-all group-hover:-translate-y-1">
+                <RefreshCw size={20} className={`transition-transform duration-700 ${isAnimating ? 'rotate-180' : ''}`} />
+            </div>
+            <span className="text-xs font-serif tracking-widest">下一頁</span>
+        </button>
+      </div>
+
+    </div>
+  );
+};
+
+export default App;
