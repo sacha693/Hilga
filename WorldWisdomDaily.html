@@ -10,82 +10,110 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- html2canvas for taking screenshots -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         :root {
             --paper-color: #fdfbf7;
-            --ink-color: #1a1a1a; /* Darker ink */
-            --accent-color: #bf360c; /* Slightly deeper orange/red */
+            --ink-color: #1a1a1a;
+            --accent-color: #bf360c;
         }
 
         body {
             font-family: 'Noto Serif TC', serif;
-            background-color: #eaddcf;
+            background-color: #e3ded6;
             color: var(--ink-color);
-            transition: background-image 1s ease-in-out;
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 1rem;
+            background-image: radial-gradient(#d7ccc8 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
-        .bg-overlay {
-            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));
-            position: fixed;
+        /* The Card Container (The Frame) */
+        #card-capture-area {
+            position: relative;
+            background-color: #fff;
+            box-shadow: 
+                0 20px 50px rgba(0,0,0,0.15), 
+                0 10px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            background-color: #5d4037;
+            transition: transform 0.3s ease;
+            color: #1a1a1a;
+            /* Fix for html2canvas alignment: Use flex to center content inside padding */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* The Background Image Layer (Acts as Border) */
+        #card-bg-layer {
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 0;
         }
 
-        /* The "Card" itself */
-        .card-glass {
-            background: rgba(255, 255, 255, 0.94); 
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 
-                0 15px 35px rgba(0,0,0,0.1), 
-                0 5px 15px rgba(0,0,0,0.05);
+        .border-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+
+        /* The Inner Content (The Paper) */
+        .card-inner-paper {
             position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.96); 
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%239C92AC' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                inset 0 0 20px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .quote-original {
             font-family: 'Playfair Display', serif;
         }
 
-        /* External Buttons Styling */
         .btn-control {
-            background-color: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            color: white;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            background-color: #fff;
+            border: 1px solid #d7ccc8;
+            color: #5d4037;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
         .btn-control:hover {
-            background-color: rgba(255, 255, 255, 0.4);
+            background-color: #efebe0;
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            border-color: #a1887f;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #8d6e63 0%, #5d4037 100%); /* Darker gradient */
+            background: linear-gradient(135deg, #8d6e63 0%, #5d4037 100%);
             border: none;
             color: white;
-            box-shadow: 0 4px 15px rgba(93, 64, 55, 0.4);
+            box-shadow: 0 4px 15px rgba(93, 64, 55, 0.3);
         }
         
         .btn-primary:hover {
             transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 6px 20px rgba(93, 64, 55, 0.6);
+            box-shadow: 0 8px 25px rgba(93, 64, 55, 0.5);
         }
 
         .fade-in {
@@ -109,89 +137,85 @@
 </head>
 <body>
 
-    <div class="bg-overlay"></div>
-
-    <!-- The Artifact (Card) -->
-    <main class="w-full max-w-3xl card-glass rounded-[2rem] p-8 md:p-14 relative overflow-hidden text-center flex flex-col items-center mb-8 min-h-[600px]">
+    <!-- This main container is what we will screenshot -->
+    <!-- CHANGED: Added p-6 md:p-10 to create frame effect via padding instead of child margin -->
+    <main id="card-capture-area" class="w-full max-w-3xl rounded-[24px] relative mb-10 min-h-[640px] group p-6 md:p-10">
         
-        <!-- 1. Header (Tag Style) - Darker & Larger -->
-        <header class="mb-10 w-full flex flex-col items-center justify-center">
-            <div class="inline-block px-6 py-2 rounded-full bg-[#efebe0] border border-[#d7ccc8] shadow-sm">
-                <!-- Larger text, darker color -->
-                <p class="text-xs md:text-sm text-[#5d4037] tracking-[0.15em] font-bold">— 靈魂的遞歸 · 每日智慧 —</p>
-            </div>
-        </header>
+        <!-- 1. Background Image Layer (The Frame Border) -->
+        <div id="card-bg-layer"></div>
+        <div class="border-overlay"></div>
 
-        <!-- 2. Quote Content (Flexible Height) -->
-        <div id="quote-container" class="flex-grow flex flex-col justify-center w-full max-w-2xl mx-auto mb-8">
-            <div id="content-area" class="fade-in">
-                <!-- Quote with Centered Icon -->
-                <div class="mb-8 relative">
-                    <div class="flex justify-center mb-6">
-                        <!-- Icon larger and darker -->
-                        <i class="fas fa-quote-left text-5xl text-[#bf360c] opacity-25"></i>
+        <!-- 2. Inner Content Layer (The Paper) -->
+        <!-- CHANGED: Removed m-4 md:m-8, added w-full flex-grow to fill the padding area -->
+        <div class="card-inner-paper w-full flex-grow rounded-[16px] p-8 md:p-14">
+            
+   <header class="absolute top-10 left-0 w-full flex justify-center z-20">
+        <p class="text-xs md:text-sm text-[#8d7f7a] tracking-[0.25em] font-bold whitespace-nowrap opacity-90">
+            — 靈魂的遞歸 · 每日智慧 —
+        </p>
+    </header>
+
+            <!-- Quote Content -->
+            <div id="quote-container" class="flex-grow flex flex-col justify-center w-full max-w-2xl mx-auto mb-8">
+                <div id="content-area" class="fade-in">
+                    <!-- Quote with Centered Icon -->
+                    <div class="mb-8 relative text-center">
+                        <div class="flex justify-center mb-6">
+                            <i class="fas fa-quote-left text-5xl text-[#bf360c] opacity-25"></i>
+                        </div>
+                        
+                        <h2 id="quote-zh" class="relative z-10 text-3xl md:text-5xl font-bold leading-tight text-gray-900 mb-6 px-2 tracking-wide">
+                            <!-- Chinese Quote -->
+                        </h2>
+                        <div class="signature-line"></div>
                     </div>
-                    
-                    <!-- ZH Quote: Much larger and darker -->
-                    <h2 id="quote-zh" class="relative z-10 text-3xl md:text-5xl font-bold leading-tight text-gray-900 mb-6 px-2 tracking-wide">
-                        <!-- Chinese Quote -->
-                    </h2>
-                    <div class="signature-line"></div>
-                </div>
 
-                <!-- Original & Author -->
-                <div class="mb-12">
-                    <!-- Original: Larger and darker gray -->
-                    <p id="quote-original" class="quote-original text-xl md:text-2xl text-gray-800 italic mb-3 px-4 leading-relaxed">
-                        <!-- Original Quote -->
-                    </p>
-                    <!-- Author: Larger, bold, darker -->
-                    <p id="quote-author" class="text-sm md:text-base font-bold text-gray-600 tracking-widest uppercase mt-4">
-                        <!-- Author -->
-                    </p>
-                </div>
+                    <!-- Original & Author -->
+                    <div class="mb-12 text-center">
+                        <p id="quote-original" class="quote-original text-xl md:text-2xl text-gray-800 italic mb-3 px-4 leading-relaxed">
+                            <!-- Original Quote -->
+                        </p>
+                        <p id="quote-author" class="text-sm md:text-base font-bold text-gray-600 tracking-widest uppercase mt-4">
+                            <!-- Author -->
+                        </p>
+                    </div>
 
-                <!-- Essay (Note) - Warm Style -->
-                <div class="bg-orange-50 bg-opacity-80 rounded-xl p-8 text-left border-l-4 border-[#8d6e63] shadow-inner mx-1">
-                    <h3 class="text-base font-bold text-[#5d4037] mb-3 flex items-center">
-                        <i class="fas fa-lightbulb mr-2 text-yellow-700"></i> 領航員筆記
-                    </h3>
-                    <!-- Essay text: Larger (text-lg) and darker (text-gray-900) for readability -->
-                    <p id="quote-essay" class="text-gray-900 text-base md:text-lg leading-relaxed text-justify font-medium">
-                        <!-- Essay -->
-                    </p>
+                    <!-- Essay (Note) -->
+                    <div class="bg-orange-50 bg-opacity-80 rounded-xl p-8 text-left border-l-4 border-[#8d6e63] shadow-inner mx-1">
+                        <h3 class="text-base font-bold text-[#5d4037] mb-3 flex items-center">
+                            <i class="fas fa-lightbulb mr-2 text-yellow-700"></i> 領航員筆記
+                        </h3>
+                        <p id="quote-essay" class="text-gray-900 text-base md:text-lg leading-relaxed text-justify font-medium">
+                            <!-- Essay -->
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 3. Inner Footer (Card Signature) -->
-        <div class="mt-auto pt-6 border-t border-gray-200 w-full">
-            <!-- Footer text slightly larger and darker -->
-            <p class="text-gray-600 text-xs tracking-widest font-mono font-bold">
-                &copy; 2025 瑞光沙舟心流所
-            </p>
+            <!-- Footer -->
+            <div class="mt-auto pt-6 border-t border-gray-200 w-full text-center">
+                <p class="text-gray-600 text-xs tracking-widest font-mono font-bold">
+                    &copy; 2025 瑞光沙舟心流所
+                </p>
+            </div>
         </div>
-
     </main>
 
-    <!-- External Controls (Outside the Card) -->
-    <div class="fixed-bottom-controls flex justify-center gap-6 z-20 w-full max-w-md mx-auto px-4">
-        
-        <!-- Copy Button (Secondary) -->
-        <button onclick="copyQuote()" class="btn-control p-4 rounded-full flex items-center justify-center w-16 h-16" title="收藏這份智慧">
-            <i class="fas fa-bookmark text-2xl"></i>
+    <!-- External Controls -->
+    <div class="fixed-bottom-controls flex flex-wrap justify-center gap-4 z-20 w-full max-w-lg mx-auto px-4 pb-6">
+        <button onclick="copyQuote()" class="btn-control p-4 rounded-full flex items-center justify-center w-14 h-14 md:w-16 md:h-16" title="複製文字">
+            <i class="fas fa-copy text-xl md:text-2xl"></i>
         </button>
-        
-        <!-- Main Action Button (Primary) -->
-        <button onclick="renderRandomQuote()" class="btn-primary px-10 py-4 rounded-full font-bold text-xl flex items-center gap-3 flex-grow justify-center max-w-[280px]">
+        <button onclick="downloadCard()" class="btn-control p-4 rounded-full flex items-center justify-center w-14 h-14 md:w-16 md:h-16" title="下載卡片">
+            <i id="download-icon" class="fas fa-download text-xl md:text-2xl"></i>
+        </button>
+        <button onclick="renderRandomQuote()" class="btn-primary px-8 md:px-10 py-4 rounded-full font-bold text-lg md:text-xl flex items-center gap-3 flex-grow justify-center min-w-[200px] shadow-lg">
             <i class="fas fa-compass fa-spin-hover"></i> 
             <span>轉動羅盤</span>
         </button>
-
     </div>
 
     <script>
-        // Database (Same robust list)
         const quotesDB = [
             {
                 chinese: "當你凝視深淵時，深淵也在凝視你。",
@@ -517,7 +541,6 @@
             }
         ];
 
-        // Image placeholder service logic
         function getBackgroundImage(keyword) {
             return `https://image.pollinations.ai/prompt/${keyword}%20scenery%20nature%20cinematic%20warm%20light?width=1280&height=720&nologo=true`;
         }
@@ -531,31 +554,32 @@
 
         function renderRandomQuote() {
             const contentArea = document.getElementById('content-area');
+            const bgLayer = document.getElementById('card-bg-layer');
             
-            // 1. Fade Out
             contentArea.classList.remove('fade-in');
             contentArea.style.opacity = '0';
             
-            // 2. Short Delay
             setTimeout(() => {
                 currentQuote = getRandomQuote();
                 
-                // 3. Update Text
                 document.getElementById('quote-zh').innerText = currentQuote.chinese;
                 document.getElementById('quote-original').innerText = currentQuote.original;
                 document.getElementById('quote-author').innerText = `— ${currentQuote.author}`;
                 document.getElementById('quote-essay').innerText = currentQuote.essay;
 
-                // 4. Fade In Text
                 contentArea.classList.add('fade-in');
                 contentArea.style.opacity = '1';
 
-                // 5. Load Background Async
                 const bgUrl = getBackgroundImage(currentQuote.keyword);
                 const img = new Image();
+                img.crossOrigin = "anonymous";
                 img.src = bgUrl;
+                
+                bgLayer.style.opacity = '0';
+                
                 img.onload = () => {
-                     document.body.style.backgroundImage = `url('${bgUrl}')`;
+                     bgLayer.style.backgroundImage = `url('${bgUrl}')`;
+                     bgLayer.style.opacity = '1';
                 };
                 
             }, 200);
@@ -563,7 +587,6 @@
 
         function copyQuote() {
             const text = `${currentQuote.chinese}\n${currentQuote.original} — ${currentQuote.author}`;
-            
             const textArea = document.createElement("textarea");
             textArea.value = text;
             textArea.style.position = "fixed";
@@ -576,22 +599,71 @@
             try {
                 const successful = document.execCommand('copy');
                 if (successful) {
-                    const btn = document.querySelector('button[title="收藏這份智慧"]');
-                    const originalHTML = btn.innerHTML;
-                    // Change icon to check
-                    btn.innerHTML = '<i class="fas fa-check text-green-400"></i>';
-                    setTimeout(() => btn.innerHTML = originalHTML, 2000);
-                } else {
-                    console.warn('Copy command unsuccessful');
+                    const btn = document.querySelector('button[title="複製文字"] i');
+                    const originalClass = btn.className;
+                    btn.className = 'fas fa-check text-green-600';
+                    setTimeout(() => btn.className = originalClass, 2000);
                 }
             } catch (err) {
                 console.error('Fallback: Oops, unable to copy', err);
             }
-            
             document.body.removeChild(textArea);
         }
 
-        // Initialize
+        // Adjusted Download Feature for Padding Layout
+        function downloadCard() {
+            const card = document.getElementById("card-capture-area");
+            const btnIcon = document.getElementById("download-icon");
+            
+            btnIcon.className = "fas fa-circle-notch fa-spin text-gray-500";
+            
+            document.fonts.ready.then(function () {
+                setTimeout(() => {
+                    html2canvas(card, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: null,
+                        logging: false,
+                        // Explicitly set scroll position to 0 to avoid offset bugs
+                        scrollX: 0,
+                        scrollY: 0,
+                        onclone: (clonedDoc) => {
+                            const content = clonedDoc.getElementById("content-area");
+                            if (content) {
+                                content.style.opacity = '1';
+                                content.style.animation = 'none';
+                                content.classList.remove('fade-in');
+                            }
+                            
+                            const innerPaper = clonedDoc.querySelector('.card-inner-paper');
+                            if(innerPaper) {
+                                innerPaper.style.color = '#1a1a1a';
+                            }
+                            
+                            // Force remove transform to prevent coordinate shift during capture
+                            const clonedCard = clonedDoc.getElementById("card-capture-area");
+                            if(clonedCard) {
+                                clonedCard.style.transform = 'none';
+                            }
+                        }
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = `Soul-Recursion-${new Date().toISOString().slice(0,10)}.png`;
+                        link.href = canvas.toDataURL("image/png");
+                        link.click();
+                        
+                        btnIcon.className = "fas fa-check text-green-600";
+                        setTimeout(() => btnIcon.className = "fas fa-download", 2000);
+                    }).catch(err => {
+                        console.error("Capture failed:", err);
+                        alert("圖片下載失敗，可能是跨域安全限制。");
+                        btnIcon.className = "fas fa-exclamation-triangle text-red-500";
+                        setTimeout(() => btnIcon.className = "fas fa-download", 3000);
+                    });
+                }, 200);
+            });
+        }
+
         window.onload = () => {
             renderRandomQuote();
         };
